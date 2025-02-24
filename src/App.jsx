@@ -1,12 +1,18 @@
-import { BrowserRouter } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SignUp from "./pages/SignUp";
+import Layout from "./components/Layout";
+import SignIn from "./pages/SignIn";
 
 function App() {
   return (
-    <div className="font-display bg-gray-200">
+    <div className="font-display">
       <BrowserRouter>
-        <div className="text-3xl text-red-600 text-center">Hello world</div>
-        <Navbar />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route path="register" element={<SignUp />} />
+            <Route path="login" element={<SignIn />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
     </div>
   );

@@ -7,7 +7,7 @@ import { ProfileIcon } from "./icons/ProfileIcon";
 
 export default function Navbar() {
   return (
-    <div className="flex justify-between px-6 py-3 md:justify-center md:gap-8 absolute bottom-0 w-screen">
+    <div className="flex justify-between px-6 py-3 md:justify-center md:gap-8">
       <NavLink to="/search">
         {({ isActive }) => (
           <div
@@ -60,7 +60,7 @@ export default function Navbar() {
         )}
       </NavLink>
 
-      <NavLink to="/profile">
+      <NavLink to="/register">
         {({ isActive }) => (
           <div
             className={`flex flex-col items-center ${
