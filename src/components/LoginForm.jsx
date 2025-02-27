@@ -6,7 +6,7 @@ import Spinner from "./Spinner";
 import { firebaseAuthErrors } from "./errors";
 
 export default function LoginForm() {
-  const { Login, loading, error } = React.useContext(AuthContext);
+  const { Login, GoogleLogin, loading, error } = React.useContext(AuthContext);
 
   React.useEffect(() => {
     if (error) {
@@ -58,6 +58,7 @@ export default function LoginForm() {
           <button
             className="bg-[#ff6e5d] hover:bg-[#ff4f3d] text-white cursor-pointer text-sm outline-none p-2 rounded-xl w-full flex justify-center items-center gap-1 transition-colors"
             disabled={loading}
+            onClick={GoogleLogin}
           >
             <FaGoogle />
             <span>Sign in with Google</span>

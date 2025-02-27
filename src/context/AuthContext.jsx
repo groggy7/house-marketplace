@@ -4,11 +4,14 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
 import { auth, db } from "../firebase.config";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { serverTimestamp, setDoc, doc, getDoc } from "firebase/firestore";
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = React.createContext();
 
@@ -16,6 +19,7 @@ export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const provider = new GoogleAuthProvider();
 
   React.useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -55,6 +59,33 @@ export default function AuthProvider({ children }) {
     }
   }
 
+  async function GoogleLogin() {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          name: user.displayName,
+          email: user.email,
+          userId: user.uid,
+          createdAt: serverTimestamp(),
+        });
+      }
+
+      setUser({
+        id: user.uid,
+        email: user.email,
+        name: user.displayName,
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async function Logout() {
     signOut(auth);
     setUser(null);
@@ -87,7 +118,9 @@ export default function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ Login, Register, Logout, user, loading }}>
+    <AuthContext.Provider
+      value={{ Login, GoogleLogin, Register, Logout, user, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );
