@@ -87,7 +87,7 @@ export default function AuthProvider({ children }) {
   }
 
   async function Logout() {
-    signOut(auth);
+    await signOut(auth);
     setUser(null);
   }
 
@@ -102,7 +102,7 @@ export default function AuthProvider({ children }) {
         createdAt: serverTimestamp(),
       };
 
-      setDoc(doc(db, "users", creds.user.uid), user);
+      await setDoc(doc(db, "users", creds.user.uid), user);
       setUser({
         id: creds.user.uid,
         name: name,

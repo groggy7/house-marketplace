@@ -7,9 +7,11 @@ export default function SignIn() {
   const { user } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
-  if (user) {
-    navigate("/");
-  }
+  React.useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return user ? null : (
     <div className="flex flex-col justify-center items-center p-4 w-screen md:w-120 mx-auto">
