@@ -60,7 +60,7 @@ export default function Navbar() {
         )}
       </NavLink>
 
-      <NavLink to="/register">
+      <NavLink to="/profile">
         {({ isActive }) => (
           <div
             className={`flex flex-col items-center ${

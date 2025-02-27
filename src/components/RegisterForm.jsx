@@ -1,10 +1,28 @@
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
-import { useContext } from "react";
+import React from "react";
 import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
 import Spinner from "./Spinner";
+import { firebaseAuthErrors } from "./errors";
 
 export default function RegisterForm() {
-  const { Register, loading } = useContext(AuthContext);
+  const { Register, loading, error, user } = React.useContext(AuthContext);
+
+  React.useEffect(() => {
+    if (error) {
+      toast.error(firebaseAuthErrors[error.code], {
+        duration: 3000,
+      });
+    }
+  }, [error]);
+
+  React.useEffect(() => {
+    if (user) {
+      toast.success("Login successful", {
+        duration: 2000,
+      });
+    }
+  }, [user]);
 
   function handleAction(formdata) {
     const name = formdata.get("name");
