@@ -6,7 +6,7 @@ import Spinner from "./Spinner";
 import { firebaseAuthErrors } from "./errors";
 
 export default function LoginForm() {
-  const { Login, loading, error, user } = React.useContext(AuthContext);
+  const { Login, loading, error } = React.useContext(AuthContext);
 
   React.useEffect(() => {
     if (error) {
@@ -16,18 +16,15 @@ export default function LoginForm() {
     }
   }, [error]);
 
-  React.useEffect(() => {
-    if (user) {
+  async function handleAction(formdata) {
+    const email = formdata.get("email");
+    const password = formdata.get("password");
+    const error = await Login(email, password);
+    if (!error) {
       toast.success("Login successful", {
         duration: 3000,
       });
     }
-  }, [user]);
-
-  function handleAction(formdata) {
-    const email = formdata.get("email");
-    const password = formdata.get("password");
-    Login(email, password);
   }
 
   return (

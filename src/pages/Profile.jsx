@@ -9,20 +9,28 @@ import security from "../assets/security.svg";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user } = React.useContext(AuthContext);
+  const { user, loading, Logout } = React.useContext(AuthContext);
 
   React.useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       navigate("/login");
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   if (!user) {
     return null;
   }
   return (
     <div className="p-8 w-full max-w-200 mx-auto">
-      <h1 className="text-3xl font-bold">Profile</h1>
+      <div className="flex justify-between">
+        <h1 className="text-3xl font-bold">Profile</h1>
+        <button
+          className="bg-[#009a88] text-white py-1 px-3 rounded-lg hover:bg-[#2b5e57] transition-colors"
+          onClick={Logout}
+        >
+          Logout
+        </button>
+      </div>
       <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 mt-8 py-6 px-8">
         <div className="flex flex-col justify-center items-center gap-4">
           <img src={avatar} alt="avatar" className="w-20" />

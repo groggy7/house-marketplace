@@ -3,20 +3,37 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { auth, db } from "../firebase.config";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { serverTimestamp, setDoc, doc, getDoc } from "firebase/firestore";
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = React.createContext();
 
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        setUser({
+          id: user.uid,
+          email: user.email,
+          name: userDoc.data().name,
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   async function Login(email, password) {
     setLoading(true);
@@ -32,7 +49,7 @@ export default function AuthProvider({ children }) {
 
       navigate("/");
     } catch (error) {
-      setError(error);
+      return error;
     } finally {
       setLoading(false);
     }
@@ -63,16 +80,14 @@ export default function AuthProvider({ children }) {
 
       navigate("/");
     } catch (error) {
-      setError(error);
+      return error;
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <AuthContext.Provider
-      value={{ Login, Register, Logout, user, loading, error }}
-    >
+    <AuthContext.Provider value={{ Login, Register, Logout, user, loading }}>
       {children}
     </AuthContext.Provider>
   );
