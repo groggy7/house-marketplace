@@ -24,6 +24,8 @@ export default function LoginForm() {
       toast.success("Login successful", {
         duration: 3000,
       });
+    } else {
+      toast.error(firebaseAuthErrors[error.code]);
     }
   }
 
@@ -39,6 +41,7 @@ export default function LoginForm() {
           name="email"
           className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg"
           placeholder="Email Adress"
+          required
           disabled={loading}
         />
         <input
@@ -46,6 +49,7 @@ export default function LoginForm() {
           name="password"
           className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg"
           placeholder="Password"
+          required
           disabled={loading}
         />
         <button

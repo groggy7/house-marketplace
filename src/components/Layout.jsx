@@ -3,9 +3,11 @@ import Header from "./Header";
 import Navbar from "./Navbar";
 export default function Layout() {
   return (
-    <div className="min-h-screen flex flex-col justify-between gap-4">
+    <div className="relative min-h-screen flex flex-col">
       <Header />
-      <Outlet />
+      <main className="flex-1">
+        <Outlet />
+      </main>
       <Navbar />
     </div>
   );

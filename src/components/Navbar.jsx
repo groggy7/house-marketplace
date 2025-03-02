@@ -7,8 +7,8 @@ import { ProfileIcon } from "./icons/ProfileIcon";
 
 export default function Navbar() {
   return (
-    <div className="flex justify-between px-6 py-3 md:justify-center md:gap-8 shadow-[0px_-2px_15px_-2px_rgba(0,0,0,0.2)]">
-      <NavLink to="/search">
+    <div className="sticky bottom-0 flex justify-between px-6 py-3 md:justify-center md:gap-8 shadow-nav">
+      <NavLink to="/">
         {({ isActive }) => (
           <div
             className={`flex flex-col items-center ${
