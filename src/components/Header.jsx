@@ -1,10 +1,23 @@
 import { NavLink } from "react-router-dom";
-import { LuMessageCircleMore } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import { IoBookmark, IoPerson } from "react-icons/io5";
 import { AiFillSchedule } from "react-icons/ai";
+import { BiSolidMessageRoundedDetail } from "react-icons/bi";
+import { RiMenu3Line } from "react-icons/ri";
+import { LuMessageCircleMore } from "react-icons/lu";
+import { AuthContext } from "../context/AuthContext";
+import React from "react";
+import avatar from "../assets/avatar.png";
 
 export default function Header() {
+  const { user } = React.useContext(AuthContext);
+  const handleClick = () => {
+    const elem = document.activeElement;
+    if (elem) {
+      elem?.blur();
+    }
+  };
+
   return (
     <header className="flex justify-between items-center gap-2 px-8 py-4 shadow-lg">
       <Link className="flex gap-2 items-center" to="/">
@@ -27,26 +40,17 @@ export default function Header() {
         </svg>
         <span className="font-bold text-[#333333] text-xl">StayBook</span>
       </Link>
-      <div className="flex justify-between md:justify-center gap-4 md:gap-8">
+      <nav className="hidden md:flex items-center gap-8">
         <NavLink to="/bookmarks">
           {({ isActive }) => (
-            <div
-              className={`flex flex-col items-center ${
-                isActive ? "text-[#009a88]" : "text-[#c1c1c1]"
-              }`}
-            >
-              <IoBookmark size={26} isActive={isActive} />
+            <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
+              <IoBookmark size={26} />
             </div>
           )}
         </NavLink>
-
         <NavLink to="/bookings">
           {({ isActive }) => (
-            <div
-              className={`flex flex-col items-center ${
-                isActive ? "text-[#009a88]" : "text-[#c1c1c1]"
-              }`}
-            >
+            <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
               <AiFillSchedule size={26} isActive={isActive} />
             </div>
           )}
@@ -54,11 +58,7 @@ export default function Header() {
 
         <NavLink to="/inbox">
           {({ isActive }) => (
-            <div
-              className={`flex flex-col items-center ${
-                isActive ? "text-[#009a88]" : "text-[#c1c1c1]"
-              }`}
-            >
+            <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
               <LuMessageCircleMore size={26} isActive={isActive} />
             </div>
           )}
@@ -66,15 +66,113 @@ export default function Header() {
 
         <NavLink to="/profile">
           {({ isActive }) => (
-            <div
-              className={`flex flex-col items-center ${
-                isActive ? "text-[#009a88]" : "text-[#c1c1c1]"
-              }`}
-            >
-              <IoPerson size={26} isActive={isActive} />
+            <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
+              {user ? (
+                <img src={avatar} alt="avatar" className="w-8" />
+              ) : (
+                <IoPerson size={26} isActive={isActive} />
+              )}
             </div>
           )}
         </NavLink>
+      </nav>
+      <div className="dropdown dropdown-end md:hidden">
+        <label tabIndex={0} className="btn btn-ghost btn-circle">
+          {user ? (
+            <img src={avatar} alt="avatar" className="w-8" />
+          ) : (
+            <RiMenu3Line size={24} />
+          )}
+        </label>
+        <ul
+          tabIndex={0}
+          className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+        >
+          <li>
+            <NavLink
+              to="/bookmarks"
+              className="flex items-center gap-2 p-2"
+              onClick={handleClick}
+            >
+              {({ isActive }) => (
+                <>
+                  <IoBookmark
+                    size={20}
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  />
+                  <span
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  >
+                    Bookmarks
+                  </span>
+                </>
+              )}
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/bookings"
+              className="flex items-center gap-2 p-2"
+              onClick={handleClick}
+            >
+              {({ isActive }) => (
+                <>
+                  <AiFillSchedule
+                    size={20}
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  />
+                  <span
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  >
+                    Bookings
+                  </span>
+                </>
+              )}
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/inbox"
+              className="flex items-center gap-2 p-2"
+              onClick={handleClick}
+            >
+              {({ isActive }) => (
+                <>
+                  <BiSolidMessageRoundedDetail
+                    size={20}
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  />
+                  <span
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  >
+                    Inbox
+                  </span>
+                </>
+              )}
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/profile"
+              className="flex items-center gap-2 p-2"
+              onClick={handleClick}
+            >
+              {({ isActive }) => (
+                <>
+                  <IoPerson
+                    size={20}
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  />
+                  <span
+                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
+                  >
+                    Profile
+                  </span>
+                </>
+              )}
+            </NavLink>
+          </li>
+        </ul>
       </div>
     </header>
   );
