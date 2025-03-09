@@ -19,7 +19,7 @@ export default function Listings({ listings }) {
         />
         <div className="p-3">
           <div className="flex justify-between">
-            <span className="font-bold">{listing.name}</span>
+            <span className="font-bold">{listing.title}</span>
             <div className="flex gap-2 items-center">
               <FaStar fill="#ffc107" />
               <span>4,7/5</span>

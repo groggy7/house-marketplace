@@ -41,7 +41,7 @@ export default function Header() {
         <NavLink to="/bookings">
           {({ isActive }) => (
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
-              <AiFillSchedule size={26} isActive={isActive} />
+              <AiFillSchedule size={26} />
             </div>
           )}
         </NavLink>
@@ -49,7 +49,7 @@ export default function Header() {
         <NavLink to="/inbox">
           {({ isActive }) => (
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
-              <LuMessageCircleMore size={26} isActive={isActive} />
+              <LuMessageCircleMore size={26} />
             </div>
           )}
         </NavLink>
@@ -60,7 +60,7 @@ export default function Header() {
               {user ? (
                 <img src={avatar} alt="avatar" className="w-8" />
               ) : (
-                <IoPerson size={26} isActive={isActive} />
+                <IoPerson size={26} />
               )}
             </div>
           )}
