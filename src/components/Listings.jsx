@@ -10,7 +10,7 @@ export default function Listings({ listings }) {
       <Link
         to={`/listings/${listing.id}`}
         key={listing.id}
-        className="flex flex-col w-max rounded-lg shadow-card m-4"
+        className="flex flex-col rounded-lg shadow-card m-4"
       >
         <img
           src={listing.imageURLs[0]}
@@ -51,7 +51,11 @@ export default function Listings({ listings }) {
     );
   });
 
-  return <div className="mt-6">{listingsEl}</div>;
+  return (
+    <div className="mt-6 grid md:grid-cols-[repeat(auto-fill,400px)] grid-cols-[repeat(auto-fill,300px)]">
+      {listingsEl}
+    </div>
+  );
 }
 
 Listings.propTypes = {

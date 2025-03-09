@@ -31,7 +31,7 @@ export default function RegisterForm() {
     const confirmPassword = formdata.get("confirm-password");
 
     if (password !== confirmPassword) {
-      console.log("toast");
+      toast.error("Passwords do not match");
       return;
     }
 
