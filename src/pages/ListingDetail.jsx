@@ -45,7 +45,7 @@ export default function ListingDetail() {
   return loading ? (
     <Spinner />
   ) : (
-    <div className="text-[#333333] lg:px-8 lg:py-6 lg:flex lg:flex-col lg:gap-4 max-w-[1400px] mx-auto">
+    <div className="text-[#333333] lg:px-8 lg:py-6 lg:flex lg:flex-col lg:gap-4 mx-auto">
       <div className="lg:flex lg:gap-8">
         <div className="lg:w-[65%]">
           <div className="-mx-4 lg:mx-0">

@@ -15,7 +15,7 @@ export default function Listings({ listings }) {
         <img
           src={listing.imageURLs[0]}
           alt={listing.name}
-          className="rounded-lg"
+          className="rounded-lg max-h-70"
         />
         <div className="p-3">
           <div className="flex justify-between">
