@@ -23,8 +23,9 @@ export default function ListingForm() {
     const isBalconyAvailable = formdata.get("balcony") ? true : false;
     //const images = formdata.get("images");
 
-    setDoc(doc(db, "listings", uuidv4()), {
-      id: uuidv4(),
+    const listingID = uuidv4();
+    setDoc(doc(db, "listings", listingID), {
+      id: listingID,
       title,
       description,
       price,

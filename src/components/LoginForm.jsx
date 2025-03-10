@@ -10,9 +10,7 @@ export default function LoginForm() {
 
   React.useEffect(() => {
     if (error) {
-      toast.error(firebaseAuthErrors[error.code], {
-        duration: 3000,
-      });
+      toast.error(firebaseAuthErrors[error.code]);
     }
   }, [error]);
 

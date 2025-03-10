@@ -15,7 +15,7 @@ export default function Listings({ listings }) {
         <img
           src={listing.imageURLs[0]}
           alt={listing.name}
-          className="w-100 rounded-lg"
+          className="rounded-lg"
         />
         <div className="p-3">
           <div className="flex justify-between">
@@ -52,7 +52,11 @@ export default function Listings({ listings }) {
   });
 
   return (
-    <div className="mt-6 grid md:grid-cols-[repeat(auto-fill,400px)] grid-cols-[repeat(auto-fill,300px)]">
+    <div
+      className="mt-6 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))]
+      md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]
+      lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]"
+    >
       {listingsEl}
     </div>
   );

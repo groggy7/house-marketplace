@@ -10,6 +10,7 @@ import Starred from "./pages/Starred";
 import Bookings from "./pages/Bookings";
 import Inbox from "./pages/Inbox";
 import ListingForm from "./components/ListingForm";
+import ListingDetail from "./pages/ListingDetail";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="register" element={<SignUp />} />
             <Route path="login" element={<SignIn />} />
             <Route path="listings/create" element={<ListingForm />} />
+            <Route path="listings/:listingID" element={<ListingDetail />} />
           </Route>
         </Routes>
       </AuthProvider>
