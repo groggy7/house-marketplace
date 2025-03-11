@@ -6,7 +6,7 @@ import AuthProvider from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
-import Starred from "./pages/Starred";
+import Bookmarks from "./pages/Bookmarks";
 import Bookings from "./pages/Bookings";
 import Inbox from "./pages/Inbox";
 import ListingForm from "./components/ListingForm";
@@ -20,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Search />} />
-            <Route path="bookmarks" element={<Starred />} />
+            <Route path="bookmarks" element={<Bookmarks />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="inbox" element={<Inbox />} />
             <Route path="profile" element={<Profile />} />

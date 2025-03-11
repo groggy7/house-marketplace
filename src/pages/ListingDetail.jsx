@@ -1,13 +1,20 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getDoc, doc, deleteDoc } from "firebase/firestore";
+import {
+  getDoc,
+  doc,
+  deleteDoc,
+  arrayUnion,
+  updateDoc,
+  setDoc,
+} from "firebase/firestore";
 import { ref as storageRef, deleteObject } from "firebase/storage";
 import { auth, db, storage } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa6";
 import circle from "../assets/circle.svg";
-import { IoBedSharp } from "react-icons/io5";
+import { IoBedSharp, IoBookmark } from "react-icons/io5";
 import { BiSolidBath, BiSolidDryer, BiSolidWasher } from "react-icons/bi";
 import { LuSnowflake } from "react-icons/lu";
 import { FaHotjar, FaParking } from "react-icons/fa";
@@ -56,6 +63,29 @@ export default function ListingDetail() {
     }
   }
 
+  async function addToBookmarks(listingID) {
+    if (auth.currentUser) {
+      try {
+        const docRef = doc(db, "bookmarks", auth.currentUser.uid);
+        await updateDoc(docRef, {
+          listingIDs: arrayUnion(listingID),
+        });
+        toast.success("Listing added to bookmarks");
+      } catch (error) {
+        if (error.code === "not-found") {
+          await setDoc(doc(db, "bookmarks", auth.currentUser.uid), {
+            listingIDs: [listingID],
+          });
+          toast.success("Listing added to bookmarks");
+        } else {
+          toast.error(error.message || "An error occured");
+        }
+      }
+    } else {
+      toast.error("You must be logged in to bookmark a listing");
+    }
+  }
+
   return loading ? (
     <Spinner />
   ) : (
@@ -79,7 +109,14 @@ export default function ListingDetail() {
             >
               Delete Listing
             </button>
-          ) : null}
+          ) : (
+            <IoBookmark
+              fill="#009a88"
+              size={32}
+              className="hover:cursor-pointer hover:fill-[#007a73] transition-colors"
+              onClick={() => addToBookmarks(listingID)}
+            />
+          )}
         </div>
       </div>
       <div className="lg:flex lg:gap-8">
