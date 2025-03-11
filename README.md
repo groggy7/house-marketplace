@@ -56,7 +56,7 @@ StayBook is a modern web application for listing and finding properties for sale
 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/groggy7/house-marketplace.git
 cd house-marketplace
 ```
 
