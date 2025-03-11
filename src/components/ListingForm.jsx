@@ -143,8 +143,18 @@ export default function ListingForm() {
       try {
         for (const image of images) {
           const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
-          const fileRef = ref(storage, `listings/images/${filename}`);
-          await uploadBytes(fileRef, image);
+          const fileRef = ref(storage, `listings/${filename}`);
+          const metadata = {
+            customMetadata: {
+              userId: auth.currentUser.uid,
+              uploadedAt: new Date().toISOString(),
+              fileName: image.name,
+              listingId: listingID,
+              contentType: image.type,
+            },
+          };
+
+          await uploadBytes(fileRef, image, metadata);
 
           uploadedFileRefs.push(fileRef);
           const downloadURL = await getDownloadURL(fileRef);

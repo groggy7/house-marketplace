@@ -5,6 +5,13 @@ import { IoBedSharp } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
 export default function Listings({ listings }) {
+  if (listings.length === 0) {
+    return (
+      <p className="text-center mt-6 text-[#7f7f7f] text-2xl">
+        No listings found
+      </p>
+    );
+  }
   const listingsEl = listings.map((listing) => {
     return (
       <Link

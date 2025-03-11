@@ -1,7 +1,8 @@
 import React from "react";
-import { useParams } from "react-router-dom";
-import { getDoc, doc } from "firebase/firestore";
-import { db } from "../firebase.config";
+import { useNavigate, useParams } from "react-router-dom";
+import { getDoc, doc, deleteDoc } from "firebase/firestore";
+import { ref as storageRef, deleteObject } from "firebase/storage";
+import { auth, db, storage } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa6";
@@ -10,14 +11,14 @@ import { IoBedSharp } from "react-icons/io5";
 import { BiSolidBath, BiSolidDryer, BiSolidWasher } from "react-icons/bi";
 import { LuSnowflake } from "react-icons/lu";
 import { FaHotjar, FaParking } from "react-icons/fa";
-import { IoIosWifi } from "react-icons/io";
+import { IoIosArrowBack, IoIosWifi } from "react-icons/io";
 import { MdBalcony, MdPool } from "react-icons/md";
 import ImageSlider from "../components/ImageSlider";
 
 export default function ListingDetail() {
   const [loading, setLoading] = React.useState(true);
   const [listing, setListing] = React.useState(null);
-
+  const navigate = useNavigate();
   const params = useParams();
   const listingID = params.listingID;
 
@@ -42,10 +43,45 @@ export default function ListingDetail() {
     getListing();
   }, [listingID]);
 
+  async function deleteListing(listingID) {
+    try {
+      await deleteDoc(doc(db, "listings", listingID));
+      for (let i = 0; i < listing.imageURLs.length; i++) {
+        await deleteObject(storageRef(storage, listing.imageURLs[i]));
+      }
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      navigate("/");
+    }
+  }
+
   return loading ? (
     <Spinner />
   ) : (
-    <div className="text-[#333333] lg:px-8 lg:py-6 lg:flex lg:flex-col lg:gap-4 mx-auto">
+    <div className="text-[#333333] lg:px-8 lg:py-6 lg:flex lg:flex-col lg:gap-4 mx-auto overflow-hidden">
+      <div className="flex justify-between items-center">
+        <div
+          className="flex gap-1 items-center cursor-pointer hover:text-[#009a88] transition-colors
+          hover:font-bold m-3 lg:my-0"
+          onClick={() => navigate(-1)}
+        >
+          <IoIosArrowBack fontSize={20} />
+          <span>Back</span>
+        </div>
+        <div>
+          {auth.currentUser?.uid === listing.userRef ? (
+            <button
+              className="btn btn-outline btn-error"
+              onClick={() => {
+                deleteListing(listingID);
+              }}
+            >
+              Delete Listing
+            </button>
+          ) : null}
+        </div>
+      </div>
       <div className="lg:flex lg:gap-8">
         <div className="lg:w-[65%]">
           <div className="-mx-4 lg:mx-0">
@@ -147,10 +183,23 @@ export default function ListingDetail() {
             {listing.type === "rent" ? "/month" : null}
           </p>
           <div className="flex gap-6">
-            <button className="bg-[#009a88] text-white rounded-lg w-full py-2 cursor-pointer">
+            <button
+              className={`bg-[#009a88] text-white rounded-lg w-full py-2 ${
+                auth.currentUser?.uid === listing.userRef
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+              disabled={auth.currentUser?.uid === listing.userRef}
+            >
               Reserve
             </button>
-            <button className="bg-[#ff6e5d] text-white rounded-lg w-full py-2 cursor-pointer">
+            <button
+              className={`bg-[#ff6e5d] text-white rounded-lg w-full py-2 ${
+                auth.currentUser?.uid === listing.userRef
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer"
+              }`}
+            >
               Contact
             </button>
           </div>

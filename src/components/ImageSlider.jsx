@@ -22,14 +22,18 @@ const ImageSlider = ({ images }) => {
   };
 
   return (
-    <div className="relative w-full h-96 rounded-lg overflow-hidden">
+    <div className="relative w-full box-border h-96 rounded-lg overflow-hidden">
       <div className="h-full w-full relative">
         {images.map((image, index) => (
           <img
             key={index}
             src={image}
             alt={`Apartment image ${index + 1}`}
-            className={`w-full h-full object-cover absolute top-0 left-0 transition-all duration-500 ${index === currentIndex ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'}`}
+            className={`w-full h-full object-cover object-center absolute top-0 left-0 transition-all duration-500 ${
+              index === currentIndex
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 -translate-x-full"
+            }`}
           />
         ))}
       </div>
