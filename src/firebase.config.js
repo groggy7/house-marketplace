@@ -6,13 +6,13 @@ import { getStorage } from "firebase/storage";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBa36uwRWtO7LzOOEJaQCkrBB_sxR3rqi8",
-  authDomain: "house-marketplace-7d6ed.firebaseapp.com",
-  projectId: "house-marketplace-7d6ed",
-  storageBucket: "house-marketplace-7d6ed.firebasestorage.app",
-  messagingSenderId: "20435275072",
-  appId: "1:20435275072:web:d301de0b95c580b4c9fea5",
-  measurementId: "G-ZJEZ2VQ52J",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
