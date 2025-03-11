@@ -113,7 +113,7 @@ export default function ListingDetail() {
             <IoBookmark
               fill="#009a88"
               size={32}
-              className="hover:cursor-pointer hover:fill-[#007a73] transition-colors"
+              className="hover:cursor-pointer hover:fill-[#007a73] transition-colors mr-3"
               onClick={() => addToBookmarks(listingID)}
             />
           )}
