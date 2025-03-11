@@ -2,6 +2,15 @@
 
 StayBook is a modern web application for listing and finding properties for sale or rent. Built with React and Firebase, it provides a seamless experience for users to browse, list, and manage properties.
 
+![image](https://github.com/user-attachments/assets/1766cc4c-745d-437f-9e1b-85cf36181dbc)
+
+![image](https://github.com/user-attachments/assets/7931ca46-50e9-4700-9134-fea4bbc71ecc)
+
+![image](https://github.com/user-attachments/assets/32092443-5c02-4bc7-ba42-387bcce939ce)
+
+![image](https://github.com/user-attachments/assets/b22a8e49-92b3-494c-8b30-ada854334a5c)
+
+
 ## Features
 
 - **User Authentication**
