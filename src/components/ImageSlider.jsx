@@ -38,25 +38,28 @@ const ImageSlider = ({ images }) => {
         ))}
       </div>
 
-      <div className="absolute top-1/2 left-4 -translate-y-1/2">
-        <button
-          onClick={goToPrevious}
-          className="p-2 bg-white opacity-50 hover:opacity-80 rounded-full hover:bg-opacity-80 transition-all cursor-pointer"
-          aria-label="Previous image"
-        >
-          <FaChevronLeft size={12} />
-        </button>
-      </div>
-      <div className="absolute top-1/2 right-4 -translate-y-1/2">
-        <button
-          onClick={goToNext}
-          className="p-2 bg-white opacity-50 hover:opacity-80 rounded-full hover:bg-opacity-80 transition-all cursor-pointer"
-          aria-label="Next image"
-        >
-          <FaChevronRight size={12} />
-        </button>
-      </div>
-
+      {images.length > 1 ? (
+        <div>
+          <div className="absolute top-1/2 left-6 -translate-y-1/2">
+            <button
+              onClick={goToPrevious}
+              className="p-2 bg-white opacity-60 hover:opacity-80 rounded-full hover:bg-opacity-80 transition-all cursor-pointer"
+              aria-label="Previous image"
+            >
+              <FaChevronLeft size={12} />
+            </button>
+          </div>
+          <div className="absolute top-1/2 right-6 -translate-y-1/2">
+            <button
+              onClick={goToNext}
+              className="p-2 bg-white opacity-60 hover:opacity-80 rounded-full hover:bg-opacity-80 transition-all cursor-pointer"
+              aria-label="Next image"
+            >
+              <FaChevronRight size={12} />
+            </button>
+          </div>
+        </div>
+      ) : null}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
         {images.map((_, slideIndex) => (
           <button
