@@ -1,5 +1,5 @@
 import React from "react";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebase.config";
 import toast from "react-hot-toast";
 import Spinner from "../components/Spinner";
@@ -55,6 +55,26 @@ function Starred() {
     }
   }
 
+  async function deleteBookmark(listingID) {
+    const remainingBookmarks = bookmarks.filter(
+      (bookmark) => bookmark !== listingID
+    );
+    try {
+      setLoading(true);
+      await updateDoc(doc(db, "bookmarks", auth.currentUser.uid), {
+        listingIDs: remainingBookmarks,
+      });
+      setBookmarks(remainingBookmarks);
+      setBookmarkedListings((prev) =>
+        prev.filter((listing) => listing.id !== listingID)
+      );
+    } catch (error) {
+      toast.error(error.message || "An error occured");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   if (loading) {
     return <Spinner />;
   }
@@ -94,10 +114,16 @@ function Starred() {
           </div>
           <Link
             to={`/listings/${listing.id}`}
-            className="shrink-0 px-2 py-1 sm:px-4 sm:py-2 text-sm sm:text-base bg-[#009a88] text-white rounded hover:bg-[#008577] transition-colors"
+            className="shrink-0 px-2 py-1 sm:px-3 text-sm sm:text-base bg-[#009a88] text-white rounded hover:bg-[#008577] transition-colors"
           >
             View
           </Link>
+          <button
+            className="shrink-0 px-2 py-1 sm:px-3 text-sm sm:text-base bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            onClick={() => deleteBookmark(listing.id)}
+          >
+            Delete
+          </button>
         </li>
       );
     });

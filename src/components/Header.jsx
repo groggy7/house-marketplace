@@ -162,8 +162,9 @@ export default function Header() {
               )}
             </NavLink>
             <Link
-              className="btn btn-soft btn-primary mt-2"
               to="listings/create"
+              className="btn btn-soft btn-primary mt-2"
+              onClick={handleClick}
             >
               Create a listing
             </Link>
