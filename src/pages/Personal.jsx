@@ -104,9 +104,13 @@ export default function Personal() {
                 ...userInfo,
                 name: fullName || userInfo.name,
                 avatarURL: downloadURL,
-              }).catch((error) => {
-                toast.error(error.message || "An error occurred");
-              });
+              })
+                .then(() => {
+                  toast.success("Profile updated");
+                })
+                .catch((error) => {
+                  toast.error(error.message || "An error occurred");
+                });
               setUser({
                 ...userInfo,
                 name: fullName || userInfo.name,
@@ -124,6 +128,7 @@ export default function Personal() {
         name: fullName,
       })
         .then(() => {
+          toast.success("Profile updated");
           setUser({
             ...userInfo,
             name: fullName,

@@ -1,7 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { IoBookmark, IoPerson } from "react-icons/io5";
-import { AiFillSchedule } from "react-icons/ai";
 import { BiSolidMessageRoundedDetail } from "react-icons/bi";
 import { RiMenu3Line } from "react-icons/ri";
 import { LuMessageCircleMore } from "react-icons/lu";
@@ -38,14 +37,6 @@ export default function Header() {
             </div>
           )}
         </NavLink>
-        <NavLink to="/bookings">
-          {({ isActive }) => (
-            <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
-              <AiFillSchedule size={26} />
-            </div>
-          )}
-        </NavLink>
-
         <NavLink to="/inbox">
           {({ isActive }) => (
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
@@ -94,27 +85,6 @@ export default function Header() {
                     className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
                   >
                     Bookmarks
-                  </span>
-                </>
-              )}
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/bookings"
-              className="flex items-center gap-2 p-2"
-              onClick={handleClick}
-            >
-              {({ isActive }) => (
-                <>
-                  <AiFillSchedule
-                    size={20}
-                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
-                  />
-                  <span
-                    className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}
-                  >
-                    Bookings
                   </span>
                 </>
               )}

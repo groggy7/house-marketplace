@@ -7,7 +7,6 @@ import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import Bookmarks from "./pages/Bookmarks";
-import Bookings from "./pages/Bookings";
 import Inbox from "./pages/Inbox";
 import ListingForm from "./components/ListingForm";
 import ListingDetail from "./pages/ListingDetail";
@@ -23,7 +22,6 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Search />} />
             <Route path="bookmarks" element={<Bookmarks />} />
-            <Route path="bookings" element={<Bookings />} />
             <Route path="inbox" element={<Inbox />} />
             <Route path="profile">
               <Route index element={<Profile />} />
