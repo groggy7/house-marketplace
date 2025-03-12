@@ -25,7 +25,7 @@ export default function Listings({ listings }) {
         <img
           src={listing.imageURLs[0]}
           alt={listing.name}
-          className="rounded-lg max-h-70"
+          className="rounded-lg max-h-70 hover:opacity-80 transition-all duration-300"
         />
         <div className="p-3">
           <div className="flex justify-between">
