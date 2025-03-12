@@ -39,7 +39,6 @@ export default function Personal() {
         });
       } catch (error) {
         toast.error(error.message || "An error occurred");
-        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -78,56 +77,61 @@ export default function Personal() {
       return;
     }
 
-    try {
-      if (selectedFile) {
-        const metadata = {
-          contentType: selectedFile.type,
-          userId: user.id,
-        };
+    if (selectedFile) {
+      const metadata = {
+        contentType: selectedFile.type,
+        userId: user.id,
+      };
 
-        const storageRef = ref(
-          storage,
-          `avatars/${selectedFile.name}`,
-          metadata
-        );
-        const uploadTask = uploadBytesResumable(storageRef, selectedFile);
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress = Math.round(
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            );
-            toast.success(`Upload is ${progress}% done`);
-          },
-          (error) => {
-            toast.error(error.message || "An error occurred");
-            console.log(error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      const storageRef = ref(storage, `avatars/${selectedFile.name}`, metadata);
+      const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          toast.success(`Upload is ${progress}% done`);
+        },
+        (error) => {
+          toast.error(error.message || "An error occurred");
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref)
+            .then((downloadURL) => {
               const docRef = doc(db, "users", user.id);
               updateDoc(docRef, {
                 ...userInfo,
                 name: fullName || userInfo.name,
                 avatarURL: downloadURL,
+              }).catch((error) => {
+                toast.error(error.message || "An error occurred");
               });
               setUser({
                 ...userInfo,
                 name: fullName || userInfo.name,
                 avatar: downloadURL,
               });
+            })
+            .catch((error) => {
+              toast.error(error.message || "An error occurred");
             });
-          }
-        );
-      } else {
-        const docRef = doc(db, "users", user.id);
-        updateDoc(docRef, {
-          name: fullName,
+        }
+      );
+    } else {
+      const docRef = doc(db, "users", user.id);
+      updateDoc(docRef, {
+        name: fullName,
+      })
+        .then(() => {
+          setUser({
+            ...userInfo,
+            name: fullName,
+          });
+        })
+        .catch((error) => {
+          toast.error(error.message || "An error occurred");
         });
-      }
-    } catch (error) {
-      toast.error(error.message || "An error occurred");
-      console.log(error);
     }
 
     setDisplaySaveBtn(false);
