@@ -25,6 +25,7 @@ import ImageSlider from "../components/ImageSlider";
 export default function ListingDetail() {
   const [loading, setLoading] = React.useState(true);
   const [listing, setListing] = React.useState(null);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
   const params = useParams();
   const listingID = params.listingID;
@@ -50,16 +51,20 @@ export default function ListingDetail() {
     getListing();
   }, [listingID]);
 
-  async function deleteListing(listingID) {
+  async function handleDeleteConfirm() {
     try {
+      setLoading(true);
       await deleteDoc(doc(db, "listings", listingID));
       for (let i = 0; i < listing.imageURLs.length; i++) {
         await deleteObject(storageRef(storage, listing.imageURLs[i]));
       }
-    } catch (error) {
-      toast.error(error);
-    } finally {
+      toast.success("Listing deleted successfully");
       navigate("/");
+    } catch (error) {
+      toast.error(error.message || "Could not delete listing");
+    } finally {
+      setLoading(false);
+      setShowDeleteModal(false);
     }
   }
 
@@ -102,10 +107,8 @@ export default function ListingDetail() {
         <div>
           {auth.currentUser?.uid === listing.userRef ? (
             <button
-              className="btn btn-outline btn-error"
-              onClick={() => {
-                deleteListing(listingID);
-              }}
+              className="btn btn-outline btn-error my-2 mr-3 sm:mr-0"
+              onClick={() => setShowDeleteModal(true)}
             >
               Delete Listing
             </button>
@@ -242,6 +245,31 @@ export default function ListingDetail() {
           </div>
         </div>
       </div>
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">Delete Listing</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this listing? This action cannot
+              be undone.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                onClick={() => setShowDeleteModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+                onClick={handleDeleteConfirm}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
