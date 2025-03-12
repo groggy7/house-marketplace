@@ -17,8 +17,11 @@ export default function Listings({ listings }) {
       <Link
         to={`/listings/${listing.id}`}
         key={listing.id}
-        className="flex flex-col rounded-lg shadow-card m-4"
+        className="flex flex-col rounded-lg shadow-card m-4 relative"
       >
+        <div className="badge badge-soft badge-info absolute right-2 top-2">
+          {listing.type === "rent" ? "For Rent" : "For Sale"}
+        </div>
         <img
           src={listing.imageURLs[0]}
           alt={listing.name}
@@ -47,7 +50,7 @@ export default function Listings({ listings }) {
               <span className="text-[#009a88] font-bold mr-1">
                 ${listing.price}
               </span>
-              total
+              <span>{listing.type === "rent" ? "/ month" : "total"}</span>
             </div>
             <button className="cursor-pointer text-white bg-[#009a88] px-3 py-[2px] rounded-sm">
               View
