@@ -29,6 +29,7 @@ export default function AuthProvider({ children }) {
           id: user.uid,
           email: user.email,
           name: userDoc.data().name,
+          avatar: userDoc.data().avatarURL,
         });
       } else {
         setUser(null);
@@ -119,7 +120,16 @@ export default function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ Login, GoogleLogin, Register, Logout, user, loading }}
+      value={{
+        Login,
+        GoogleLogin,
+        Register,
+        Logout,
+        user,
+        setUser,
+        loading,
+        avatar: user?.avatar,
+      }}
     >
       {children}
     </AuthContext.Provider>

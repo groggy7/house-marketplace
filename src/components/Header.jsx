@@ -7,11 +7,11 @@ import { RiMenu3Line } from "react-icons/ri";
 import { LuMessageCircleMore } from "react-icons/lu";
 import { AuthContext } from "../context/AuthContext";
 import React from "react";
-import avatar from "../assets/avatar.png";
+import avatarImage from "../assets/avatar.png";
 import home from "../assets/home.svg";
 
 export default function Header() {
-  const { user } = React.useContext(AuthContext);
+  const { user, avatar } = React.useContext(AuthContext);
   const handleClick = () => {
     const elem = document.activeElement;
     if (elem) {
@@ -58,7 +58,7 @@ export default function Header() {
           {({ isActive }) => (
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
               {user ? (
-                <img src={avatar} alt="avatar" className="w-8" />
+                <img src={avatar || avatarImage} alt="avatar" className="w-8" />
               ) : (
                 <IoPerson size={26} />
               )}

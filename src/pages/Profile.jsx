@@ -1,15 +1,14 @@
 import { AuthContext } from "../context/AuthContext";
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import avatar from "../assets/avatar.png";
+import { Link, useNavigate } from "react-router-dom";
+import avatarImage from "../assets/avatar.png";
 import person from "../assets/person.svg";
-import documents from "../assets/documents.svg";
 import payment from "../assets/payment.svg";
 import security from "../assets/security.svg";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, loading, Logout } = React.useContext(AuthContext);
+  const { user, avatar, loading, Logout } = React.useContext(AuthContext);
 
   React.useEffect(() => {
     if (!loading && !user) {
@@ -33,7 +32,7 @@ export default function Profile() {
       </div>
       <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 mt-8 py-6 px-8">
         <div className="flex flex-col justify-center items-center gap-4">
-          <img src={avatar} alt="avatar" className="w-20" />
+          <img src={avatar || avatarImage} alt="avatar" className="w-20" />
           <span className="font-bold">{user.name.split(" ")[0]}</span>
         </div>
         <div className="w-[2px] bg-[#e5e5e5]"></div>
@@ -48,26 +47,27 @@ export default function Profile() {
         </div>
       </div>
       <h3 className="text-xl font-semibold my-4">Settings</h3>
-      <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 p-2 items-center my-3">
+      <Link
+        className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 p-2 items-center my-3"
+        to="personal"
+      >
         <img src={person} alt="person icon" className="w-[24px]" />
         <span>Personal information</span>
-      </div>
-      <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 p-2 items-center my-3">
-        <img
-          src={documents}
-          alt="travel documents icon"
-          className="w-[16px] ml-1"
-        />
-        <span>Travel documents</span>
-      </div>
-      <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 p-2 items-center my-3">
+      </Link>
+      <Link
+        className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 p-2 items-center my-3"
+        //to="documents"
+      >
         <img src={payment} alt="person icon" className="w-[24px]" />
         <span>Payment methods</span>
-      </div>
-      <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 p-2 items-center my-3">
+      </Link>
+      <Link
+        className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 p-2 items-center my-3"
+        to="security"
+      >
         <img src={security} alt="person icon" className="w-[24px]" />
         <span>Security</span>
-      </div>
+      </Link>
     </div>
   );
 }

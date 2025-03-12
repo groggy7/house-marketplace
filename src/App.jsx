@@ -11,6 +11,8 @@ import Bookings from "./pages/Bookings";
 import Inbox from "./pages/Inbox";
 import ListingForm from "./components/ListingForm";
 import ListingDetail from "./pages/ListingDetail";
+import Personal from "./pages/Personal";
+import Security from "./pages/Security";
 
 function App() {
   return (
@@ -23,7 +25,11 @@ function App() {
             <Route path="bookmarks" element={<Bookmarks />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="inbox" element={<Inbox />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="profile">
+              <Route index element={<Profile />} />
+              <Route path="personal" element={<Personal />} />
+              <Route path="security" element={<Security />} />
+            </Route>
             <Route path="register" element={<SignUp />} />
             <Route path="login" element={<SignIn />} />
             <Route path="listings/create" element={<ListingForm />} />
