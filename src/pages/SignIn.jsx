@@ -1,19 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 
 export default function SignIn() {
-  const { user } = React.useContext(AuthContext);
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (user) {
+    if (isAuthenticated) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [isAuthenticated, navigate]);
 
-  return user ? null : (
+  return isAuthenticated ? null : (
     <div className="flex flex-col justify-center items-center p-4 w-screen md:w-120 mx-auto">
       <h1 className="text-[#333333] text-2xl font-bold text-center">
         Welcome Back!

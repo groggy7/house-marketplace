@@ -4,13 +4,13 @@ import { IoBookmark, IoPerson } from "react-icons/io5";
 import { BiSolidMessageRoundedDetail } from "react-icons/bi";
 import { RiMenu3Line } from "react-icons/ri";
 import { LuMessageCircleMore } from "react-icons/lu";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 import avatarImage from "../assets/avatar.png";
 import home from "../assets/home.svg";
 
 export default function Header() {
-  const { user, avatar } = React.useContext(AuthContext);
+  const { user, isAuthenticated } = useAuth0();
   const handleClick = () => {
     const elem = document.activeElement;
     if (elem) {
@@ -25,7 +25,7 @@ export default function Header() {
         <span className="font-bold text-[#333333] text-xl">StayBook</span>
       </Link>
       <nav className="hidden md:flex items-center gap-8">
-        {user ? (
+        {isAuthenticated ? (
           <Link className="btn btn-soft btn-primary" to="listings/create">
             Create a listing
           </Link>
@@ -48,8 +48,12 @@ export default function Header() {
         <NavLink to="/profile">
           {({ isActive }) => (
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
-              {user ? (
-                <img src={avatar || avatarImage} alt="avatar" className="w-8" />
+              {isAuthenticated ? (
+                <img
+                  src={user.picture}
+                  alt="avatar"
+                  className="w-8"
+                />
               ) : (
                 <IoPerson size={26} />
               )}
@@ -59,8 +63,8 @@ export default function Header() {
       </nav>
       <div className="dropdown dropdown-end md:hidden">
         <label tabIndex={0} className="btn btn-ghost btn-circle">
-          {user ? (
-            <img src={avatar} alt="avatar" className="w-8" />
+          {isAuthenticated ? (
+            <img src={user.picture} alt="avatar" className="w-8" />
           ) : (
             <RiMenu3Line size={24} />
           )}
@@ -131,13 +135,15 @@ export default function Header() {
                 </>
               )}
             </NavLink>
-            <Link
-              to="listings/create"
-              className="btn btn-soft btn-primary mt-2"
-              onClick={handleClick}
+            {isAuthenticated && (
+              <Link
+                to="listings/create"
+                className="btn btn-soft btn-primary mt-2"
+                onClick={handleClick}
             >
               Create a listing
             </Link>
+            )}
           </li>
         </ul>
       </div>

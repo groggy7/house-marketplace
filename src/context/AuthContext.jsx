@@ -1,16 +1,6 @@
 import React from "react";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
-} from "firebase/auth";
-import { auth, db } from "../firebase.config";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { serverTimestamp, setDoc, doc, getDoc } from "firebase/firestore";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = React.createContext();
@@ -18,105 +8,59 @@ export const AuthContext = React.createContext();
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
-  const provider = new GoogleAuthProvider();
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        setUser({
-          id: user.uid,
-          email: user.email,
-          name: userDoc.data().name,
-          avatar: userDoc.data().avatarURL,
-        });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
+    const fetchUser = async () => {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user`,
+        {
+          credentials: "include",
+        }
+      );
 
-    return () => unsubscribe();
+      const data = await response.json();
+      setUser(data.user);
+    };
+
+    fetchUser();
   }, []);
 
-  async function Login(email, password) {
-    setLoading(true);
+  async function Login(username, email, password) {
     try {
-      const creds = await signInWithEmailAndPassword(auth, email, password);
-      const user = await getDoc(doc(db, "users", creds.user.uid));
+      setLoading(true);
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+          }),
+        }
+      );
 
-      setUser({
-        id: creds.user.uid,
-        email: creds.user.email,
-        name: user.data().name,
-      });
+      const data = await response.json();
 
-      navigate("/");
-    } catch (error) {
-      return error;
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function GoogleLogin() {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists()) {
-        await setDoc(doc(db, "users", user.uid), {
-          name: user.displayName,
-          email: user.email,
-          userId: user.uid,
-          createdAt: serverTimestamp(),
-        });
-      }
-
-      setUser({
-        id: user.uid,
-        email: user.email,
-        name: user.displayName,
-      });
-
+      setUser(data.user);
       navigate("/");
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  async function Logout() {
-    await signOut(auth);
-    setUser(null);
-  }
-
-  async function Register(name, email, password) {
-    setLoading(true);
-    try {
-      const creds = await createUserWithEmailAndPassword(auth, email, password);
-      const user = {
-        name,
-        email,
-        userId: creds.user.uid,
-        createdAt: serverTimestamp(),
-      };
-
-      await setDoc(doc(db, "users", creds.user.uid), user);
-      setUser({
-        id: creds.user.uid,
-        name: name,
-        email: creds.user.email,
-      });
-
-      navigate("/");
-    } catch (error) {
-      return error;
     } finally {
       setLoading(false);
     }
   }
+
+  async function GoogleLogin() {}
+
+  async function Logout() {}
+
+  async function Register(username, email, password) {}
 
   return (
     <AuthContext.Provider

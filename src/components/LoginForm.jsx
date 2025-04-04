@@ -6,8 +6,9 @@ import Spinner from "./Spinner";
 import { firebaseAuthErrors } from "./errors";
 
 export default function LoginForm() {
-  const { Login, GoogleLogin, loading, error } = React.useContext(AuthContext);
-
+  const { Login, loading } = React.useContext(AuthContext);
+  const [error, setError] = React.useState(null);
+  
   React.useEffect(() => {
     if (error) {
       toast.error(firebaseAuthErrors[error.code]);
@@ -15,9 +16,10 @@ export default function LoginForm() {
   }, [error]);
 
   async function handleAction(formdata) {
+    const username = formdata.get("username");
     const email = formdata.get("email");
     const password = formdata.get("password");
-    const error = await Login(email, password);
+    const error = await Login(username, email, password);
     if (!error) {
       toast.success("Login successful", {
         duration: 3000,
@@ -60,13 +62,14 @@ export default function LoginForm() {
           <button
             className="bg-[#ff6e5d] hover:bg-[#ff4f3d] text-white cursor-pointer text-sm outline-none p-2 rounded-xl w-full flex justify-center items-center gap-1 transition-colors"
             disabled={loading}
-            onClick={GoogleLogin}
+            onClick={() => loginWithRedirect({ connection: "google-oauth2" })}
           >
             <FaGoogle />
             <span>Sign in with Google</span>
           </button>
           <button
             className="bg-[#4267b2] hover:bg-[#365899] text-white cursor-pointer text-sm outline-none p-2 rounded-xl w-full flex justify-center items-center gap-1 transition-colors"
+            onClick={() => loginWithRedirect({ connection: "facebook" })}
             disabled={loading}
           >
             <FaFacebookF />

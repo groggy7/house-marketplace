@@ -33,7 +33,7 @@ export default function Profile() {
       <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 mt-8 py-6 px-8">
         <div className="flex flex-col justify-center items-center gap-4">
           <img src={avatar || avatarImage} alt="avatar" className="w-20" />
-          <span className="font-bold">{user.name.split(" ")[0]}</span>
+          <span className="font-bold">{user.full_name.split(" ")[0]}</span>
         </div>
         <div className="w-[2px] bg-[#e5e5e5]"></div>
         <div className="flex flex-col gap-2 justify-center px-2 flex-auto">

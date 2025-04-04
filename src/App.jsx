@@ -13,6 +13,7 @@ import ListingDetail from "./pages/ListingDetail";
 import Personal from "./pages/Personal";
 import Security from "./pages/Security";
 
+
 function App() {
   return (
     <BrowserRouter>
