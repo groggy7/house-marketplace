@@ -100,7 +100,7 @@ function Starred() {
           key={listing.id}
         >
           <img
-            src={listing.imageURLs[0]}
+            src={listing.image_urls[0]}
             alt={listing.title}
             className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-lg shrink-0"
           />

@@ -89,7 +89,6 @@ export default function AuthProvider({ children }) {
         navigate("/login");
       } else {
         const data = await response.json();
-        console.log(data);
       }
     } catch (error) {
       console.log(error);

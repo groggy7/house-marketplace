@@ -23,7 +23,7 @@ export default function Listings({ listings }) {
           {listing.type === "rent" ? "For Rent" : "For Sale"}
         </div>
         <img
-          src={listing.imageURLs[0]}
+          src={listing.image_urls[0]}
           alt={listing.name}
           className="rounded-lg max-h-70 hover:opacity-80 transition-all duration-300"
         />

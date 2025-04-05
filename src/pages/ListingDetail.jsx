@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  getDoc,
   doc,
   deleteDoc,
   arrayUnion,
@@ -21,10 +20,12 @@ import { FaHotjar, FaParking } from "react-icons/fa";
 import { IoIosArrowBack, IoIosWifi } from "react-icons/io";
 import { MdBalcony, MdPool } from "react-icons/md";
 import ImageSlider from "../components/ImageSlider";
+import { AuthContext } from "../context/AuthContext";
 
 export default function ListingDetail() {
   const [loading, setLoading] = React.useState(true);
   const [listing, setListing] = React.useState(null);
+  const { user } = React.useContext(AuthContext);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
   const params = useParams();
@@ -32,15 +33,15 @@ export default function ListingDetail() {
 
   React.useEffect(() => {
     async function getListing() {
-      const ref = doc(db, "listings", listingID);
       try {
-        const docSnap = await getDoc(ref);
-
-        if (docSnap.exists()) {
-          setListing(docSnap.data());
-        } else {
-          toast.error("listing does not exist");
-        }
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/listing/${listingID}`,
+          {
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        setListing(data);
       } catch (error) {
         console.log(error);
       } finally {
@@ -53,38 +54,37 @@ export default function ListingDetail() {
 
   async function handleDeleteConfirm() {
     try {
-      setLoading(true);
-      await deleteDoc(doc(db, "listings", listingID));
-      for (let i = 0; i < listing.imageURLs.length; i++) {
-        await deleteObject(storageRef(storage, listing.imageURLs[i]));
-      }
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/listing/${listingID}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
       toast.success("Listing deleted successfully");
       navigate("/");
     } catch (error) {
-      toast.error(error.message || "Could not delete listing");
-    } finally {
-      setLoading(false);
-      setShowDeleteModal(false);
+      console.log(error);
     }
   }
 
   async function addToBookmarks(listingID) {
     if (auth.currentUser) {
       try {
-        const docRef = doc(db, "bookmarks", auth.currentUser.uid);
-        await updateDoc(docRef, {
-          listingIDs: arrayUnion(listingID),
-        });
+        const response = await fetch(
+          `${
+            import.meta.env.VITE_BACKEND_SERVER_HEROKU
+          }/listing/${listingID}/bookmark`,
+          {
+            method: "POST",
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
         toast.success("Listing added to bookmarks");
       } catch (error) {
-        if (error.code === "not-found") {
-          await setDoc(doc(db, "bookmarks", auth.currentUser.uid), {
-            listingIDs: [listingID],
-          });
-          toast.success("Listing added to bookmarks");
-        } else {
-          toast.error(error.message || "An error occured");
-        }
+        console.log(error);
       }
     } else {
       toast.error("You must be logged in to bookmark a listing");
@@ -105,7 +105,7 @@ export default function ListingDetail() {
           <span>Back</span>
         </div>
         <div>
-          {auth.currentUser?.uid === listing.userRef ? (
+          {user?.uid === listing.user_id ? (
             <button
               className="btn btn-outline btn-error my-2 mr-3 sm:mr-0"
               onClick={() => setShowDeleteModal(true)}
@@ -125,7 +125,7 @@ export default function ListingDetail() {
       <div className="lg:flex lg:gap-8">
         <div className="lg:w-[65%]">
           <div className="-mx-4 lg:mx-0">
-            <ImageSlider images={listing.imageURLs} />
+            <ImageSlider images={listing.image_urls} />
           </div>
           <div className="px-4 lg:px-0">
             <h1 className="text-2xl lg:text-3xl mt-4">{listing.title}</h1>
@@ -170,43 +170,43 @@ export default function ListingDetail() {
                 <span>Air Conditioning</span>
               </div>
             ) : null}
-            {listing.isWifiAvailable ? (
+            {listing.is_wifi_available ? (
               <div className="flex gap-2 items-center mb-2">
                 <IoIosWifi size={18} />
                 <span>Wifi</span>
               </div>
             ) : null}
-            {listing.isHeated ? (
+            {listing.is_heated ? (
               <div className="flex gap-2 items-center mb-2">
                 <FaHotjar size={18} />
                 <span>Heated</span>
               </div>
             ) : null}
-            {listing.isParkingAvailable ? (
+            {listing.is_parking_available ? (
               <div className="flex gap-2 items-center mb-2">
                 <FaParking size={18} />
                 <span>Parking</span>
               </div>
             ) : null}
-            {listing.isWasherAvailable ? (
+            {listing.is_washer_available ? (
               <div className="flex gap-2 items-center mb-2">
                 <BiSolidWasher size={18} />
                 <span>Washer</span>
               </div>
             ) : null}
-            {listing.isDryerAvailable ? (
+            {listing.is_dryer_available ? (
               <div className="flex gap-2 items-center mb-2">
                 <BiSolidDryer size={18} />
                 <span>Dryer</span>
               </div>
             ) : null}
-            {listing.isBalconyAvailable ? (
+            {listing.is_balcony_available ? (
               <div className="flex gap-2 items-center mb-2">
                 <MdBalcony size={18} />
                 <span>Balcony</span>
               </div>
             ) : null}
-            {listing.isPoolAvailable ? (
+            {listing.is_pool_available ? (
               <div className="flex gap-2 items-center mb-2">
                 <MdPool size={18} />
                 <span>Pool</span>

@@ -1,7 +1,5 @@
 import { IoSearchSharp } from "react-icons/io5";
-import { collection, getDocs } from "firebase/firestore";
 import React from "react";
-import { db } from "../firebase.config";
 import Listings from "../components/Listings";
 import Spinner from "../components/Spinner";
 
@@ -66,10 +64,15 @@ export default function Search() {
     async function fetchListings() {
       try {
         setLoading(true);
-        const querySnapshot = await getDocs(collection(db, "listings"));
-        const listingsData = querySnapshot.docs.map((doc) => doc.data());
-        setListings(listingsData);
-        setFilteredListings(listingsData);
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/listing`,
+          {
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        setListings(data.listings);
+        setFilteredListings(data.listings);
       } catch (error) {
         console.log(error);
       } finally {
