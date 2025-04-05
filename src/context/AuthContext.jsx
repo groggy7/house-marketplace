@@ -8,19 +8,25 @@ export const AuthContext = React.createContext();
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user`,
-        {
-          credentials: "include",
-        }
-      );
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user`,
+          {
+            credentials: "include",
+          }
+        );
 
-      const data = await response.json();
-      setUser(data.user);
+        const data = await response.json();
+        setUser(data.user);
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUser();
@@ -58,7 +64,21 @@ export default function AuthProvider({ children }) {
 
   async function GoogleLogin() {}
 
-  async function Logout() {}
+  async function Logout() {
+    try {
+      setLoading(true);
+      await fetch(`${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+      setUser(null);
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function Register(username, email, password) {}
 

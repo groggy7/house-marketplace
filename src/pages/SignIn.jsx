@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import LoginForm from "../components/LoginForm";
-import { useAuth0 } from "@auth0/auth0-react";
+import { AuthContext } from "../context/AuthContext";
 import React from "react";
 
 export default function SignIn() {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
   React.useEffect(() => {

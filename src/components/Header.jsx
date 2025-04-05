@@ -4,13 +4,13 @@ import { IoBookmark, IoPerson } from "react-icons/io5";
 import { BiSolidMessageRoundedDetail } from "react-icons/bi";
 import { RiMenu3Line } from "react-icons/ri";
 import { LuMessageCircleMore } from "react-icons/lu";
-import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 import avatarImage from "../assets/avatar.png";
 import home from "../assets/home.svg";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Header() {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated } = React.useContext(AuthContext);
   const handleClick = () => {
     const elem = document.activeElement;
     if (elem) {
@@ -49,11 +49,7 @@ export default function Header() {
           {({ isActive }) => (
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
               {isAuthenticated ? (
-                <img
-                  src={user.picture}
-                  alt="avatar"
-                  className="w-8"
-                />
+                <img src={user.picture} alt="avatar" className="w-8" />
               ) : (
                 <IoPerson size={26} />
               )}
@@ -140,9 +136,9 @@ export default function Header() {
                 to="listings/create"
                 className="btn btn-soft btn-primary mt-2"
                 onClick={handleClick}
-            >
-              Create a listing
-            </Link>
+              >
+                Create a listing
+              </Link>
             )}
           </li>
         </ul>
