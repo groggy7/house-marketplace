@@ -24,12 +24,17 @@ export default function AuthProvider({ children }) {
         setUser(data.user);
       } catch (error) {
         setUser(null);
+        localStorage.removeItem("isLoggedIn");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
+    if (localStorage.getItem("isLoggedIn")) {
+      fetchUser();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   async function Login(username, email, password) {
@@ -53,8 +58,11 @@ export default function AuthProvider({ children }) {
 
       const data = await response.json();
 
-      setUser(data.user);
-      navigate("/");
+      if (data.user) {
+        localStorage.setItem("isLoggedIn", "true");
+        setUser(data.user);
+        navigate("/");
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -67,12 +75,22 @@ export default function AuthProvider({ children }) {
   async function Logout() {
     try {
       setLoading(true);
-      await fetch(`${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-      setUser(null);
-      navigate("/login");
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        localStorage.removeItem("isLoggedIn");
+        setUser(null);
+        navigate("/login");
+      } else {
+        const data = await response.json();
+        console.log(data);
+      }
     } catch (error) {
       console.log(error);
     } finally {
