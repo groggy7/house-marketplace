@@ -137,12 +137,15 @@ export default function AuthProvider({ children }) {
 
       if (response.ok) {
         navigate("/login");
+        return true;
       } else {
         const data = await response.json();
         setError(data.error);
+        return false;
       }
     } catch (error) {
-      setError(error.message);
+      setError(error.message || "An unexpected error occurred");
+      return false;
     } finally {
       setLoading(false);
     }
