@@ -1,79 +1,69 @@
 import React from "react";
-import { getDoc, doc, updateDoc } from "firebase/firestore";
-import { db, auth } from "../firebase.config";
 import toast from "react-hot-toast";
-import Spinner from "../components/Spinner";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import Spinner from "../components/Spinner";
 
 function Starred() {
   const [bookmarks, setBookmarks] = React.useState([]);
   const [bookmarkedListings, setBookmarkedListings] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  const [user, setUser] = React.useState(null);
-
-  React.useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      if (user) {
-        getBookmarkedListings();
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { user } = React.useContext(AuthContext);
+  const [loading, setLoading] = React.useState(false);
 
   async function getBookmarkedListings() {
     try {
       setLoading(true);
-      const bookmarkSnap = await getDoc(
-        doc(db, "bookmarks", auth.currentUser.uid)
-      );
-
-      if (bookmarkSnap.exists()) {
-        const bookmarkData = bookmarkSnap.data();
-        setBookmarks(bookmarkData.listingIDs || []);
-        if (bookmarkData.listingIDs) {
-          for (let i = 0; i < bookmarkData.listingIDs.length; i++) {
-            const listingSnap = await getDoc(
-              doc(db, "listings", bookmarkData.listingIDs[i])
-            );
-            if (listingSnap.exists()) {
-              setBookmarkedListings((prev) => [...prev, listingSnap.data()]);
-            }
-          }
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/bookmark`,
+        {
+          method: "GET",
+          credentials: "include",
         }
-      } else {
-        setBookmarks([]);
-      }
-    } catch (error) {
-      toast.error(error.message);
-      setBookmarks([]);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function deleteBookmark(listingID) {
-    const remainingBookmarks = bookmarks.filter(
-      (bookmark) => bookmark !== listingID
-    );
-    try {
-      setLoading(true);
-      await updateDoc(doc(db, "bookmarks", auth.currentUser.uid), {
-        listingIDs: remainingBookmarks,
-      });
-      setBookmarks(remainingBookmarks);
-      setBookmarkedListings((prev) =>
-        prev.filter((listing) => listing.id !== listingID)
       );
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        setBookmarks(data);
+        setBookmarkedListings(data);
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "An error occured");
+      }
     } catch (error) {
       toast.error(error.message || "An error occured");
     } finally {
       setLoading(false);
     }
   }
+
+  async function deleteBookmark(listingID) {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/bookmark/${listingID}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        getBookmarkedListings();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "An error occured");
+      }
+    } catch (error) {
+      toast.error(error.message || "An error occured");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  React.useEffect(() => {
+    if (user) {
+      getBookmarkedListings();
+    }
+  }, [user]);
 
   if (loading) {
     return <Spinner />;

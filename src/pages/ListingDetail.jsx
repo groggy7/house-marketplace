@@ -73,9 +73,7 @@ export default function ListingDetail() {
     if (auth.currentUser) {
       try {
         const response = await fetch(
-          `${
-            import.meta.env.VITE_BACKEND_SERVER_HEROKU
-          }/listing/${listingID}/bookmark`,
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/bookmark/${listingID}`,
           {
             method: "POST",
             credentials: "include",
