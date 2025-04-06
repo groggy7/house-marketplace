@@ -3,29 +3,23 @@ import React from "react";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import Spinner from "./Spinner";
-import { firebaseAuthErrors } from "./errors";
 
 export default function LoginForm() {
-  const { Login, loading } = React.useContext(AuthContext);
-  const [error, setError] = React.useState(null);
-  
+  const { Login, loading, error } = React.useContext(AuthContext);
+
   React.useEffect(() => {
     if (error) {
-      toast.error(firebaseAuthErrors[error.code]);
+      toast.error(error);
     }
   }, [error]);
 
   async function handleAction(formdata) {
-    const username = formdata.get("username");
     const email = formdata.get("email");
     const password = formdata.get("password");
-    const error = await Login(username, email, password);
-    if (!error) {
-      toast.success("Login successful", {
-        duration: 3000,
-      });
-    } else {
-      toast.error(firebaseAuthErrors[error.code]);
+    const result = await Login(email, password);
+
+    if (!error && result !== false) {
+      toast.success("Login successful");
     }
   }
 
@@ -40,7 +34,7 @@ export default function LoginForm() {
           type="email"
           name="email"
           className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg"
-          placeholder="Email Adress"
+          placeholder="Email Address"
           required
           disabled={loading}
         />

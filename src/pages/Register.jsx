@@ -3,7 +3,7 @@ import RegisterForm from "../components/RegisterForm";
 import { AuthContext } from "../context/AuthContext";
 import React from "react";
 
-export default function SignUp() {
+export default function Register() {
   const { user } = React.useContext(AuthContext);
   const navigate = useNavigate();
 

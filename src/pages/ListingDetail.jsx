@@ -25,7 +25,7 @@ import { AuthContext } from "../context/AuthContext";
 export default function ListingDetail() {
   const [loading, setLoading] = React.useState(true);
   const [listing, setListing] = React.useState(null);
-  const { user } = React.useContext(AuthContext);
+  const { user, isAuthenticated } = React.useContext(AuthContext);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const navigate = useNavigate();
   const params = useParams();
@@ -105,21 +105,22 @@ export default function ListingDetail() {
           <span>Back</span>
         </div>
         <div>
-          {user?.uid === listing.user_id ? (
+          {user?.id === listing.user_id ? (
             <button
               className="btn btn-outline btn-error my-2 mr-3 sm:mr-0"
               onClick={() => setShowDeleteModal(true)}
             >
               Delete Listing
             </button>
-          ) : (
+          ) : null}
+          {isAuthenticated && user?.id !== listing.user_id ? (
             <IoBookmark
               fill="#009a88"
               size={32}
               className="hover:cursor-pointer hover:fill-[#007a73] transition-colors mr-3"
               onClick={() => addToBookmarks(listingID)}
             />
-          )}
+          ) : null}
         </div>
       </div>
       <div className="lg:flex lg:gap-8">
@@ -225,17 +226,17 @@ export default function ListingDetail() {
           <div className="flex gap-6">
             <button
               className={`bg-[#009a88] text-white rounded-lg w-full py-2 ${
-                auth.currentUser?.uid === listing.userRef
+                user?.id === listing.user_id
                   ? "cursor-not-allowed"
                   : "cursor-pointer"
               }`}
-              disabled={auth.currentUser?.uid === listing.userRef}
+              disabled={user?.id === listing.user_id}
             >
               Reserve
             </button>
             <button
               className={`bg-[#ff6e5d] text-white rounded-lg w-full py-2 ${
-                auth.currentUser?.uid === listing.userRef
+                user?.id === listing.user_id
                   ? "cursor-not-allowed"
                   : "cursor-pointer"
               }`}

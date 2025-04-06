@@ -1,14 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-
+import { toast } from "react-hot-toast";
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = React.createContext();
 
 export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = React.useState(null);
+  const [error, setError] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
     const fetchUser = async () => {
@@ -22,8 +24,10 @@ export default function AuthProvider({ children }) {
 
         const data = await response.json();
         setUser(data.user);
+        setIsAuthenticated(true);
       } catch (error) {
         setUser(null);
+        setIsAuthenticated(false);
         localStorage.removeItem("isLoggedIn");
       } finally {
         setLoading(false);
@@ -37,9 +41,10 @@ export default function AuthProvider({ children }) {
     }
   }, []);
 
-  async function Login(username, email, password) {
+  async function Login(email, password) {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/login`,
         {
@@ -48,23 +53,25 @@ export default function AuthProvider({ children }) {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({
-            username,
-            email,
-            password,
-          }),
+          body: JSON.stringify({ email, password }),
         }
       );
 
-      const data = await response.json();
-
-      if (data.user) {
+      if (response.ok) {
+        const data = await response.json();
         localStorage.setItem("isLoggedIn", "true");
         setUser(data.user);
+        setIsAuthenticated(true);
         navigate("/");
+        return true;
+      } else {
+        const data = await response.json();
+        setError(data.error);
+        return false;
       }
     } catch (error) {
-      console.log(error);
+      setError(error.message || "An unexpected error occurred");
+      return false;
     } finally {
       setLoading(false);
     }
@@ -75,29 +82,71 @@ export default function AuthProvider({ children }) {
   async function Logout() {
     try {
       setLoading(true);
+      console.log("sending logout request");
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/logout`,
         {
           method: "POST",
           credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
+      localStorage.removeItem("isLoggedIn");
+      setUser(null);
+      setIsAuthenticated(false);
+
       if (response.ok) {
-        localStorage.removeItem("isLoggedIn");
-        setUser(null);
         navigate("/login");
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       } else {
         const data = await response.json();
+        console.log(data);
+        setError(data.error || "Logout failed");
+        navigate("/login");
       }
     } catch (error) {
-      console.log(error);
+      setError(error.message || "An unexpected error occurred during logout");
+      localStorage.removeItem("isLoggedIn");
+      setUser(null);
+      setIsAuthenticated(false);
+      navigate("/login");
     } finally {
       setLoading(false);
     }
   }
 
-  async function Register(username, email, password) {}
+  async function Register(name, email, username, password) {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ full_name: name, email, username, password }),
+        }
+      );
+
+      if (response.ok) {
+        navigate("/login");
+      } else {
+        const data = await response.json();
+        setError(data.error);
+      }
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <AuthContext.Provider
@@ -107,7 +156,8 @@ export default function AuthProvider({ children }) {
         Register,
         Logout,
         user,
-        setUser,
+        error,
+        isAuthenticated,
         loading,
         avatar: user?.avatar,
       }}

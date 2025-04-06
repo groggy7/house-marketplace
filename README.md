@@ -10,7 +10,6 @@ StayBook is a modern web application for listing and finding properties for sale
 
 ![image](https://github.com/user-attachments/assets/b22a8e49-92b3-494c-8b30-ada854334a5c)
 
-
 ## Features
 
 - **User Authentication**
@@ -102,8 +101,8 @@ src/
 ├── pages/           # Route components/pages
 │   ├── Home.jsx     # Home page
 │   ├── Profile.jsx  # User profile page
-│   ├── SignIn.jsx   # Login page
-│   └── SignUp.jsx   # Registration page
+│   ├── Login.jsx   # Login page
+│   └── Register.jsx   # Registration page
 ├── firebase.config.js # Firebase configuration
 ├── main.jsx        # Application entry point
 └── App.jsx         # Main application component

@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SignUp from "./pages/SignUp";
+import Register from "./pages/Register";
 import Layout from "./components/Layout";
-import SignIn from "./pages/SignIn";
+import Login from "./pages/Login";
 import AuthProvider from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
@@ -12,7 +12,6 @@ import ListingForm from "./components/ListingForm";
 import ListingDetail from "./pages/ListingDetail";
 import Personal from "./pages/Personal";
 import Security from "./pages/Security";
-
 
 function App() {
   return (
@@ -29,8 +28,8 @@ function App() {
               <Route path="personal" element={<Personal />} />
               <Route path="security" element={<Security />} />
             </Route>
-            <Route path="register" element={<SignUp />} />
-            <Route path="login" element={<SignIn />} />
+            <Route path="register" element={<Register />} />
+            <Route path="login" element={<Login />} />
             <Route path="listings/create" element={<ListingForm />} />
             <Route path="listings/:listingID" element={<ListingDetail />} />
           </Route>

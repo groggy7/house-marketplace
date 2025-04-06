@@ -3,7 +3,7 @@ import LoginForm from "../components/LoginForm";
 import { AuthContext } from "../context/AuthContext";
 import React from "react";
 
-export default function SignIn() {
+export default function Login() {
   const { isAuthenticated } = React.useContext(AuthContext);
   const navigate = useNavigate();
 

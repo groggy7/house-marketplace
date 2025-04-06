@@ -3,30 +3,20 @@ import React from "react";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import Spinner from "./Spinner";
-import { firebaseAuthErrors } from "./errors";
 
 export default function RegisterForm() {
-  const { Register, loading, error, user } = React.useContext(AuthContext);
+  const { Register, loading, error } = React.useContext(AuthContext);
 
   React.useEffect(() => {
     if (error) {
-      toast.error(firebaseAuthErrors[error.code], {
-        duration: 3000,
-      });
+      toast.error(error);
     }
   }, [error]);
 
-  React.useEffect(() => {
-    if (user) {
-      toast.success("Login successful", {
-        duration: 2000,
-      });
-    }
-  }, [user]);
-
-  function handleAction(formdata) {
+  async function handleAction(formdata) {
     const name = formdata.get("name");
     const email = formdata.get("email");
+    const username = formdata.get("username");
     const password = formdata.get("password");
     const confirmPassword = formdata.get("confirm-password");
 
@@ -35,7 +25,10 @@ export default function RegisterForm() {
       return;
     }
 
-    Register(name, email, password);
+    const result = await Register(name, email, username, password);
+    if (result) {
+      toast.success("Registration successful");
+    }
   }
 
   return (
@@ -49,7 +42,7 @@ export default function RegisterForm() {
           type="text"
           name="name"
           required
-          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg"
+          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg border-1 border-gray-300"
           placeholder="Full Name"
           disabled={loading}
         />
@@ -57,8 +50,16 @@ export default function RegisterForm() {
           type="email"
           name="email"
           required
-          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg"
+          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg border-1 border-gray-300"
           placeholder="Email Adress"
+          disabled={loading}
+        />
+        <input
+          type="text"
+          name="username"
+          required
+          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg border-1 border-gray-300"
+          placeholder="Username"
           disabled={loading}
         />
         <input
@@ -66,7 +67,7 @@ export default function RegisterForm() {
           name="password"
           required
           minLength={6}
-          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg"
+          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg border-1 border-gray-300"
           placeholder="Password"
           disabled={loading}
         />
@@ -75,7 +76,7 @@ export default function RegisterForm() {
           name="confirm-password"
           required
           minLength={6}
-          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg"
+          className="shadow-md w-full px-2 py-1 rounded-lg outline-[#009a88] md:text-lg border-1 border-gray-300"
           placeholder="Confirm Password"
           disabled={loading}
         />
