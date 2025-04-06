@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { toast } from "react-hot-toast";
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = React.createContext();
 
@@ -9,7 +8,7 @@ export default function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = React.useState(null);
   const [error, setError] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
   React.useEffect(() => {
@@ -82,7 +81,6 @@ export default function AuthProvider({ children }) {
   async function Logout() {
     try {
       setLoading(true);
-      console.log("sending logout request");
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/logout`,
         {
@@ -105,7 +103,6 @@ export default function AuthProvider({ children }) {
         }, 100);
       } else {
         const data = await response.json();
-        console.log(data);
         setError(data.error || "Logout failed");
         navigate("/login");
       }
@@ -162,7 +159,6 @@ export default function AuthProvider({ children }) {
         error,
         isAuthenticated,
         loading,
-        avatar: user?.avatar,
       }}
     >
       {children}

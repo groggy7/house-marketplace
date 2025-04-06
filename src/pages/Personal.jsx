@@ -11,41 +11,10 @@ import { uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
 export default function Personal() {
   const navigate = useNavigate();
   const fileInputRef = React.useRef(null);
-  const { user, setUser, loading: authLoading } = React.useContext(AuthContext);
-  const [loading, setLoading] = React.useState(true);
-  const [userInfo, setUserInfo] = React.useState(null);
+  const { user, loading } = React.useContext(AuthContext);
   const [displaySaveBtn, setDisplaySaveBtn] = React.useState(false);
   const [selectedFile, setSelectedFile] = React.useState(null);
   const [previewImage, setPreviewImage] = React.useState(null);
-
-  React.useEffect(() => {
-    if (authLoading) {
-      return;
-    }
-    if (user === null) {
-      navigate("/login");
-      return;
-    }
-
-    async function fetchUser() {
-      if (!user) return;
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.id));
-        setUserInfo({
-          id: user.id,
-          email: user.email,
-          name: userDoc.data().name,
-          avatarURL: userDoc.data().avatarURL,
-        });
-      } catch (error) {
-        toast.error(error.message || "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchUser();
-  }, [navigate, user, authLoading]);
 
   function handleClick(e) {
     e.preventDefault();
@@ -66,7 +35,7 @@ export default function Personal() {
     }
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const formdata = new FormData(e.target);
 
@@ -98,24 +67,24 @@ export default function Personal() {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref)
-            .then((downloadURL) => {
-              const docRef = doc(db, "users", user.id);
-              updateDoc(docRef, {
-                ...userInfo,
-                name: fullName || userInfo.name,
-                avatarURL: downloadURL,
-              })
-                .then(() => {
-                  toast.success("Profile updated");
-                })
-                .catch((error) => {
-                  toast.error(error.message || "An error occurred");
-                });
-              setUser({
-                ...userInfo,
-                name: fullName || userInfo.name,
-                avatar: downloadURL,
-              });
+            .then(async (downloadURL) => {
+              const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user`,
+                {
+                  method: "PUT",
+                  body: JSON.stringify({
+                    full_name: fullName || user.full_name,
+                    avatar_url: downloadURL,
+                  }),
+                  credentials: "include",
+                }
+              );
+              if (response.ok) {
+                toast.success("Profile updated");
+                window.location.reload();
+              } else {
+                toast.error("Failed to update profile");
+              }
             })
             .catch((error) => {
               toast.error(error.message || "An error occurred");
@@ -123,35 +92,33 @@ export default function Personal() {
         }
       );
     } else {
-      const docRef = doc(db, "users", user.id);
-      updateDoc(docRef, {
-        name: fullName,
-      })
-        .then(() => {
-          toast.success("Profile updated");
-          setUser({
-            ...userInfo,
-            name: fullName,
-          });
-        })
-        .catch((error) => {
-          toast.error(error.message || "An error occurred");
-        });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            full_name: fullName,
+          }),
+          credentials: "include",
+        }
+      );
+      if (response.ok) {
+        toast.success("Profile updated");
+      } else {
+        toast.error("Failed to update profile");
+      }
+      window.location.reload();
     }
 
     setDisplaySaveBtn(false);
   }
 
-  if (authLoading || loading) {
+  if (loading) {
     return <Spinner />;
   }
 
   if (!user) {
     return null;
-  }
-
-  if (!userInfo) {
-    return <Spinner />;
   }
 
   return (
@@ -182,7 +149,7 @@ export default function Personal() {
         </button>
         <div className="flex flex-col justify-center items-center gap-4">
           <img
-            src={previewImage || userInfo.avatarURL || avatar}
+            src={previewImage || user.avatar_url || avatar}
             alt="profile picture"
             className="w-24 h-24 object-cover rounded-full mx-auto"
           />
@@ -210,7 +177,7 @@ export default function Personal() {
             <input
               type="text"
               className="input w-full"
-              placeholder={userInfo.name}
+              placeholder={user.full_name}
               name="name"
             />
           </fieldset>
@@ -219,7 +186,7 @@ export default function Personal() {
             <input
               type="text"
               className="input w-full"
-              placeholder={userInfo.email}
+              placeholder={user.email}
               disabled
             />
           </fieldset>

@@ -49,7 +49,11 @@ export default function Header() {
           {({ isActive }) => (
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
               {isAuthenticated ? (
-                <img src={user.picture} alt="avatar" className="w-8" />
+                <img
+                  src={user.avatar_url || avatarImage}
+                  alt="avatar"
+                  className="w-8"
+                />
               ) : (
                 <IoPerson size={26} />
               )}
@@ -60,7 +64,11 @@ export default function Header() {
       <div className="dropdown dropdown-end md:hidden">
         <label tabIndex={0} className="btn btn-ghost btn-circle">
           {isAuthenticated ? (
-            <img src={user.picture} alt="avatar" className="w-8" />
+            <img
+              src={user.avatar_url || avatarImage}
+              alt="avatar"
+              className="w-8"
+            />
           ) : (
             <RiMenu3Line size={24} />
           )}

@@ -8,7 +8,7 @@ import security from "../assets/security.svg";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, avatar, loading, Logout } = React.useContext(AuthContext);
+  const { user, loading, Logout } = React.useContext(AuthContext);
 
   React.useEffect(() => {
     if (!loading && !user) {
@@ -19,6 +19,7 @@ export default function Profile() {
   if (!user) {
     return null;
   }
+
   return (
     <div className="p-8 w-full max-w-200 mx-auto">
       <div className="flex justify-between">
@@ -32,7 +33,11 @@ export default function Profile() {
       </div>
       <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 mt-8 py-6 px-8">
         <div className="flex flex-col justify-center items-center gap-4">
-          <img src={avatar || avatarImage} alt="avatar" className="w-20" />
+          <img
+            src={user.avatar_url || avatarImage}
+            alt="avatar"
+            className="w-20"
+          />
           <span className="font-bold">{user.full_name.split(" ")[0]}</span>
         </div>
         <div className="w-[2px] bg-[#e5e5e5]"></div>
