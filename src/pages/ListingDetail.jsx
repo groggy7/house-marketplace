@@ -1,14 +1,5 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  doc,
-  deleteDoc,
-  arrayUnion,
-  updateDoc,
-  setDoc,
-} from "firebase/firestore";
-import { ref as storageRef, deleteObject } from "firebase/storage";
-import { auth, db, storage } from "../firebase.config";
 import Spinner from "../components/Spinner";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa6";
@@ -54,18 +45,21 @@ export default function ListingDetail() {
 
   async function handleDeleteConfirm() {
     try {
-      const response = await fetch(
+      await fetch(
         `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/listing/${listingID}`,
         {
           method: "DELETE",
           credentials: "include",
         }
       );
-      const data = await response.json();
       toast.success("Listing deleted successfully");
       navigate("/");
+      window.location.reload();
     } catch (error) {
       console.log(error);
+      toast.error("Failed to delete listing");
+    } finally {
+      setLoading(false);
     }
   }
 

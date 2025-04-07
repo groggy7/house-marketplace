@@ -1,11 +1,4 @@
 import { Link } from "react-router-dom";
-import { storage } from "../firebase.config";
-import {
-  deleteObject,
-  uploadBytes,
-  getDownloadURL,
-  ref,
-} from "firebase/storage";
 import toast from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import { useState, useContext } from "react";
@@ -74,7 +67,7 @@ export default function ListingForm() {
       "image/webp",
       "image/gif",
     ];
-    const maxSizeInBytes = 5 * 1024 * 1024;
+    const maxSizeInBytes = 10 * 1024 * 1024;
 
     for (const image of images) {
       if (!validImageTypes.includes(image.type)) {
@@ -94,28 +87,27 @@ export default function ListingForm() {
       }
     }
 
-    const uploadedFileRefs = [];
-    const imageURLs = [];
-
     try {
+      const imageURLs = [];
       for (const image of images) {
-        const filename = `${user.id}-${image.name}-${uuidv4()}`;
-        const fileRef = ref(storage, `listings/${filename}`);
-        const metadata = {
-          customMetadata: {
-            userId: user.id,
-            uploadedAt: new Date().toISOString(),
-            fileName: image.name,
-            listingId: listingID,
-            contentType: image.type,
-          },
-        };
+        const formData = new FormData();
+        formData.append("file", image);
 
-        await uploadBytes(fileRef, image, metadata);
+        const uploadResponse = await fetch(
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/file`,
+          {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+          }
+        );
 
-        uploadedFileRefs.push(fileRef);
-        const downloadURL = await getDownloadURL(fileRef);
-        imageURLs.push(downloadURL);
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        const { url } = await uploadResponse.json();
+        imageURLs.push(url);
       }
 
       const response = await fetch(
@@ -150,10 +142,7 @@ export default function ListingForm() {
       );
 
       if (!response.ok) {
-        toast.dismiss(toastId);
-        toast.error("Failed to create listing");
-        setIsSubmitting(false);
-        return;
+        throw new Error("Failed to create listing");
       }
 
       toast.dismiss(toastId);
@@ -162,14 +151,6 @@ export default function ListingForm() {
     } catch (error) {
       toast.dismiss(toastId);
       toast.error(error.message || "An error occurred");
-
-      try {
-        await Promise.all(
-          uploadedFileRefs.map((fileRef) => deleteObject(fileRef))
-        );
-      } catch (cleanupError) {
-        console.error("Error cleaning up files:", cleanupError);
-      }
     } finally {
       setIsSubmitting(false);
     }
