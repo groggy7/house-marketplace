@@ -163,7 +163,7 @@ export default function ListingDetail() {
           <div className="divider" />
           <div>
             <h3 className="font-bold mb-3 lg:text-lg">Amenities</h3>
-            {listing.isAirConditioned ? (
+            {listing.is_air_conditioned ? (
               <div className="flex gap-2 items-center mb-2">
                 <LuSnowflake size={18} />
                 <span>Air Conditioning</span>
