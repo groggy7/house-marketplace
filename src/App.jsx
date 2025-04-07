@@ -12,7 +12,7 @@ import ListingForm from "./components/ListingForm";
 import ListingDetail from "./pages/ListingDetail";
 import Personal from "./pages/Personal";
 import Security from "./pages/Security";
-
+import NotFound from "./pages/NotFound";
 function App() {
   return (
     <BrowserRouter>
@@ -32,6 +32,7 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="listings/create" element={<ListingForm />} />
             <Route path="listings/:listingID" element={<ListingDetail />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </AuthProvider>
