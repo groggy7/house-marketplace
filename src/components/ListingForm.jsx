@@ -92,6 +92,7 @@ export default function ListingForm() {
       for (const image of images) {
         const formData = new FormData();
         formData.append("file", image);
+        formData.append("folder", "listings");
 
         const uploadResponse = await fetch(
           `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/file`,
