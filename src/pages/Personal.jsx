@@ -49,13 +49,12 @@ export default function Personal() {
 
     if (selectedFile) {
       const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("folder", "avatars");
+      formData.append("avatar", selectedFile);
 
       const uploadResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/file`,
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user/avatar`,
         {
-          method: "POST",
+          method: "PUT",
           credentials: "include",
           body: formData,
         }
@@ -70,7 +69,7 @@ export default function Personal() {
       const { url } = await uploadResponse.json();
 
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user`,
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user/info`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -89,7 +88,7 @@ export default function Personal() {
       window.location.reload();
     } else {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user`,
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user/info`,
         {
           method: "PUT",
           body: JSON.stringify({
