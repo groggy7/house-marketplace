@@ -64,7 +64,7 @@ export default function ListingDetail() {
   }
 
   async function addToBookmarks(listingID) {
-    if (auth.currentUser) {
+    if (isAuthenticated) {
       try {
         const response = await fetch(
           `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/bookmark/${listingID}`,
