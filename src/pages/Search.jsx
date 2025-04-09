@@ -27,14 +27,12 @@ export default function Search() {
   function filterListings(items, search, filter) {
     let result = [...items];
 
-    // Apply search filter
     if (search) {
       result = result.filter((item) =>
         item.title.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // Apply type filter
     if (filter !== "All") {
       result = result.filter(
         (item) => item.type.toLowerCase() === filter.toLowerCase()

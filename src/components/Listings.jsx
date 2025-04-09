@@ -22,11 +22,13 @@ export default function Listings({ listings }) {
         <div className="badge badge-soft badge-info absolute right-2 top-2">
           {listing.type === "rent" ? "For Rent" : "For Sale"}
         </div>
-        <img
-          src={listing.image_urls[0]}
-          alt={listing.name}
-          className="rounded-lg max-h-70 hover:opacity-80 transition-all duration-300"
-        />
+        <div className="h-[250px] overflow-hidden rounded-t-lg">
+          <img
+            src={listing.image_urls[0]}
+            alt={listing.name}
+            className="w-full h-full object-cover hover:opacity-80 transition-all duration-300"
+          />
+        </div>
         <div className="p-3">
           <div className="flex justify-between">
             <span className="font-bold">{listing.title}</span>
@@ -63,9 +65,8 @@ export default function Listings({ listings }) {
 
   return (
     <div
-      className="mt-6 grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))]
-      md:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]
-      lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]"
+      className="mt-6 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))]
+    lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]"
     >
       {listingsEl}
     </div>
