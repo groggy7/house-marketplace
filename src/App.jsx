@@ -13,28 +13,32 @@ import ListingDetail from "./pages/ListingDetail";
 import Personal from "./pages/Personal";
 import Security from "./pages/Security";
 import NotFound from "./pages/NotFound";
+import WebSocketProvider from "./context/WebSocketContext";
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Toaster position="top-center" />
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Search />} />
-            <Route path="bookmarks" element={<Bookmarks />} />
-            <Route path="inbox" element={<Inbox />} />
-            <Route path="profile">
-              <Route index element={<Profile />} />
-              <Route path="personal" element={<Personal />} />
-              <Route path="security" element={<Security />} />
+        <WebSocketProvider>
+          <Toaster />
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Search />} />
+              <Route path="bookmarks" element={<Bookmarks />} />
+              <Route path="inbox" element={<Inbox />} />
+              <Route path="profile">
+                <Route index element={<Profile />} />
+                <Route path="personal" element={<Personal />} />
+                <Route path="security" element={<Security />} />
+              </Route>
+              <Route path="register" element={<Register />} />
+              <Route path="login" element={<Login />} />
+              <Route path="listings/create" element={<ListingForm />} />
+              <Route path="listings/:listingID" element={<ListingDetail />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="register" element={<Register />} />
-            <Route path="login" element={<Login />} />
-            <Route path="listings/create" element={<ListingForm />} />
-            <Route path="listings/:listingID" element={<ListingDetail />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
+          </Routes>
+        </WebSocketProvider>
       </AuthProvider>
     </BrowserRouter>
   );
