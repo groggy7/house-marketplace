@@ -15,13 +15,15 @@ export default function WebSocketProvider({ children }) {
       const ws = new WebSocket(`${import.meta.env.VITE_WS_SERVER_HEROKU}`);
 
       ws.onopen = () => {
-        ws.send(
-          JSON.stringify({
-            type: "auth",
-            user_id: user.id,
-          })
-        );
-        setIsConnected(true);
+        setTimeout(() => {
+          ws.send(
+            JSON.stringify({
+              type: "auth",
+              user_id: user.id,
+            })
+          );
+          setIsConnected(true);
+        }, 10000);
       };
 
       ws.onmessage = (event) => {

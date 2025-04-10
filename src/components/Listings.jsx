@@ -66,7 +66,7 @@ export default function Listings({ listings }) {
   return (
     <div
       className="mt-6 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))]
-    lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]"
+      lg:grid-cols-[repeat(auto-fill,minmax(400px,1fr))]"
     >
       {listingsEl}
     </div>
