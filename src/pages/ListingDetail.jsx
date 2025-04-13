@@ -83,6 +83,41 @@ export default function ListingDetail() {
     }
   }
 
+  async function handleContact() {
+    if (!isAuthenticated) {
+      toast.error("You must be logged in to contact the owner");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/room`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            property_id: listingID,
+            owner_id: listing.user_id,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        navigate("/inbox");
+        toast.success("Chat room created successfully");
+      } else {
+        toast.error("Failed to create chat room");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create chat room");
+    }
+  }
+
   return loading ? (
     <Spinner />
   ) : (
@@ -230,8 +265,10 @@ export default function ListingDetail() {
               className={`bg-[#ff6e5d] text-white rounded-lg w-full py-2 ${
                 user?.id === listing.user_id
                   ? "cursor-not-allowed"
-                  : "cursor-pointer"
+                  : "cursor-pointer hover:bg-[#ff5c4a] transition-colors"
               }`}
+              onClick={handleContact}
+              disabled={user?.id === listing.user_id}
             >
               Contact
             </button>

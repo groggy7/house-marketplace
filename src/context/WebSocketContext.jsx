@@ -15,21 +15,22 @@ export default function WebSocketProvider({ children }) {
       const ws = new WebSocket(`${import.meta.env.VITE_WS_SERVER_HEROKU}`);
 
       ws.onopen = () => {
-        setTimeout(() => {
-          ws.send(
-            JSON.stringify({
-              type: "auth",
-              user_id: user.id,
-            })
-          );
-          setIsConnected(true);
-        }, 10000);
+        setIsConnected(true);
+        ws.send(
+          JSON.stringify({
+            type: "auth",
+            user_id: user.id,
+          })
+        );
       };
 
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           switch (data.type) {
+            case "auth_success":
+              setIsConnected(true);
+              break;
             case "message":
               toast(data.text, {
                 icon: "💬",
@@ -38,6 +39,10 @@ export default function WebSocketProvider({ children }) {
                 className: "ws-toast",
               });
               break;
+            case "status":
+              break;
+            default:
+              console.log("Unknown message type:", data.type);
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -60,6 +65,12 @@ export default function WebSocketProvider({ children }) {
           ws.close();
         }
       };
+    } else {
+      setIsConnected(false);
+      if (socket) {
+        socket.close();
+        setSocket(null);
+      }
     }
   }, [isAuthenticated, user]);
 
