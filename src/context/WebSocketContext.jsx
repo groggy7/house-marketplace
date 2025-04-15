@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
 export const WebSocketContext = React.createContext();
 
@@ -9,6 +10,19 @@ export default function WebSocketProvider({ children }) {
   const { isAuthenticated, user } = React.useContext(AuthContext);
   const [socket, setSocket] = React.useState(null);
   const [isConnected, setIsConnected] = React.useState(false);
+  const [messageCallbacks, setMessageCallbacks] = React.useState(new Set());
+  const location = useLocation();
+
+  const addMessageCallback = React.useCallback((callback) => {
+    setMessageCallbacks((prev) => new Set([...prev, callback]));
+    return () => {
+      setMessageCallbacks((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(callback);
+        return newSet;
+      });
+    };
+  }, []);
 
   React.useEffect(() => {
     if (isAuthenticated && user) {
@@ -32,12 +46,21 @@ export default function WebSocketProvider({ children }) {
               setIsConnected(true);
               break;
             case "message":
-              toast(data.text, {
-                icon: "💬",
-                duration: 10000,
-                position: "top-right",
-                className: "ws-toast",
-              });
+              // Call all registered callbacks with the new message
+              messageCallbacks.forEach((callback) => callback(data));
+
+              // Show toast only if not on the inbox page
+              if (location.pathname !== "/inbox") {
+                toast(data.text, {
+                  icon: "💬",
+                  duration: 3000,
+                  position: "top-right",
+                  className: "ws-toast",
+                  onClick: () => {
+                    window.location.href = "/inbox";
+                  },
+                });
+              }
               break;
             case "status":
               break;
@@ -72,11 +95,12 @@ export default function WebSocketProvider({ children }) {
         setSocket(null);
       }
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, messageCallbacks, location.pathname]);
 
   const value = {
     socket,
     isConnected,
+    addMessageCallback,
   };
 
   return (

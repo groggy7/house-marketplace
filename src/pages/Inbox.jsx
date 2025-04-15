@@ -9,7 +9,8 @@ import { IoChevronBack } from "react-icons/io5";
 
 export default function Inbox() {
   const { user } = React.useContext(AuthContext);
-  const { socket, isConnected } = React.useContext(WebSocketContext);
+  const { socket, isConnected, addMessageCallback } =
+    React.useContext(WebSocketContext);
   const [loading, setLoading] = React.useState(false);
   const [rooms, setRooms] = React.useState([]);
   const [selectedRoom, setSelectedRoom] = React.useState(null);
@@ -22,7 +23,16 @@ export default function Inbox() {
   const groupMessagesByDay = (messages) => {
     const groups = {};
     messages.forEach((message) => {
-      const date = new Date(message.created_at);
+      let date;
+      try {
+        date = new Date(message.created_at);
+        if (isNaN(date.getTime())) {
+          date = new Date();
+        }
+      } catch (error) {
+        date = new Date();
+      }
+
       const day = date.toLocaleDateString(undefined, {
         weekday: "long",
         year: "numeric",
@@ -61,6 +71,10 @@ export default function Inbox() {
         );
         if (response.ok) {
           const roomsData = await response.json();
+          if (!roomsData || roomsData.length === 0) {
+            setRooms([]);
+            return;
+          }
           const roomsWithMessages = await Promise.all(
             roomsData.map(async (room) => {
               try {
@@ -168,6 +182,28 @@ export default function Inbox() {
 
     fetchMessages();
   }, [selectedRoom]);
+
+  React.useEffect(() => {
+    if (!selectedRoom) return;
+
+    const handleNewMessage = (data) => {
+      if (data.room_id === selectedRoom.room_id) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: data.id || Date.now(),
+            message: data.text,
+            sender_id: data.sender_id,
+            sender_name: data.sender_name,
+            created_at: new Date().toISOString(),
+          },
+        ]);
+      }
+    };
+
+    const cleanup = addMessageCallback(handleNewMessage);
+    return cleanup;
+  }, [selectedRoom, addMessageCallback]);
 
   if (!user) {
     return (
@@ -375,7 +411,10 @@ export default function Inbox() {
 
                     const messageData = {
                       text: newMessage.trim(),
-                      receiver_id: selectedRoom.owner_id,
+                      receiver_id:
+                        user.id === selectedRoom.owner_id
+                          ? selectedRoom.customer_id
+                          : selectedRoom.owner_id,
                       sender_id: user.id,
                       room_id: selectedRoom.room_id,
                     };

@@ -90,6 +90,25 @@ export default function ListingDetail() {
     }
 
     try {
+      const roomsResponse = await fetch(
+        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/room`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (roomsResponse.ok) {
+        const rooms = await roomsResponse.json();
+        const existingRoom = rooms.find(
+          (room) => room.property_id === listingID
+        );
+
+        if (existingRoom) {
+          navigate("/inbox");
+          return;
+        }
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/room`,
         {
@@ -106,10 +125,9 @@ export default function ListingDetail() {
       );
 
       if (response.ok) {
-        const data = await response.json();
         navigate("/inbox");
-        toast.success("Chat room created successfully");
       } else {
+        console.error("Failed to create chat room");
         toast.error("Failed to create chat room");
       }
     } catch (error) {
