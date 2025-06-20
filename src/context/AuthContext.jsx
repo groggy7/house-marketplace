@@ -25,6 +25,7 @@ export default function AuthProvider({ children }) {
         setUser(data.user);
         setIsAuthenticated(true);
       } catch (error) {
+        setError(error.message || "An unexpected error occurred");
         setUser(null);
         setIsAuthenticated(false);
         localStorage.removeItem("isLoggedIn");

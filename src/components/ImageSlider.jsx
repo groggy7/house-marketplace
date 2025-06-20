@@ -27,7 +27,7 @@ const ImageSlider = ({ images }) => {
         {images.map((image, index) => (
           <img
             key={index}
-            src={image}
+            src={`${import.meta.env.VITE_R2_STORAGE}/${image}`}
             alt={`Apartment image ${index + 1}`}
             className={`w-full h-full object-cover object-center absolute top-0 left-0 transition-all duration-500 ${
               index === currentIndex

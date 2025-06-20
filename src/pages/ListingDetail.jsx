@@ -171,7 +171,7 @@ export default function ListingDetail() {
       <div className="lg:flex lg:gap-8">
         <div className="lg:w-[65%]">
           <div className="-mx-4 lg:mx-0">
-            <ImageSlider images={listing.image_urls} />
+            <ImageSlider images={listing.image_keys} />
           </div>
           <div className="px-4 lg:px-0">
             <h1 className="text-2xl lg:text-3xl mt-4">{listing.title}</h1>

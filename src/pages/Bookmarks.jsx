@@ -89,7 +89,7 @@ function Starred() {
           key={listing.id}
         >
           <img
-            src={listing.image_urls[0]}
+            src={`${import.meta.env.VITE_R2_STORAGE}/${listing.image_keys[0]}`}
             alt={listing.title}
             className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-lg shrink-0"
           />

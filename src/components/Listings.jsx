@@ -24,7 +24,7 @@ export default function Listings({ listings }) {
         </div>
         <div className="h-[250px] overflow-hidden rounded-t-lg">
           <img
-            src={listing.image_urls[0]}
+            src={`${import.meta.env.VITE_R2_STORAGE}/${listing.image_keys[0]}`}
             alt={listing.name}
             className="w-full h-full object-cover hover:opacity-80 transition-all duration-300"
           />

@@ -88,28 +88,49 @@ export default function ListingForm() {
     }
 
     try {
-      const imageURLs = [];
-      for (const image of images) {
-        const formData = new FormData();
-        formData.append("file", image);
-        formData.append("folder", "listings");
-
-        const uploadResponse = await fetch(
-          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/file`,
+      const presignedUrlPromises = Array.from(images).map(async (image) => {
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/upload/listing`,
           {
             method: "POST",
             credentials: "include",
-            body: formData,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              listing_id: listingID,
+              content_type: image.type,
+            }),
           }
         );
-
-        if (!uploadResponse.ok) {
-          throw new Error("Failed to upload image");
+        if (!res.ok) {
+          throw new Error(`Failed to get pre-signed URL for ${image.name}`);
         }
+        return await res.json();
+      });
 
-        const { url } = await uploadResponse.json();
-        imageURLs.push(url);
-      }
+      const presignedUrlResponses = await Promise.all(presignedUrlPromises);
+
+      const uploadPromises = presignedUrlResponses.map(
+        async (response, index) => {
+          const image = images[index];
+          const { url, key } = response;
+          const res = await fetch(url, {
+            method: "PUT",
+            headers: {
+              "Content-Type": image.type,
+              "x-amz-meta-listing_id": listingID,
+            },
+            body: image,
+          });
+          if (!res.ok) {
+            throw new Error(`Failed to upload ${image.name}`);
+          }
+          return key;
+        }
+      );
+
+      const imageKeys = await Promise.all(uploadPromises);
 
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/listing`,
@@ -128,7 +149,7 @@ export default function ListingForm() {
             location: data.location,
             bathrooms: Number(data.bathrooms),
             bedrooms: Number(data.bedrooms),
-            image_urls: imageURLs,
+            image_keys: imageKeys,
             is_air_conditioned: Boolean(data.airConditioning),
             is_heated: Boolean(data.heating),
             is_wifi_available: Boolean(data.wifi),
