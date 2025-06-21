@@ -50,7 +50,7 @@ export default function Header() {
             <div className={isActive ? "text-[#009a88]" : "text-[#c1c1c1]"}>
               {isAuthenticated ? (
                 <img
-                  src={user.avatar_url || avatarImage}
+                  src={user.avatar_key ? `${import.meta.env.VITE_R2_STORAGE}/${user.avatar_key}` : avatarImage}
                   alt="avatar"
                   className="w-8"
                 />
@@ -65,7 +65,7 @@ export default function Header() {
         <label tabIndex={0} className="btn btn-ghost btn-circle">
           {isAuthenticated ? (
             <img
-              src={user.avatar_url || avatarImage}
+            src={user.avatar_key ? `${import.meta.env.VITE_R2_STORAGE}/${user.avatar_key}` : avatarImage}
               alt="avatar"
               className="w-8"
             />

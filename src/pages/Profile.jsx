@@ -34,7 +34,7 @@ export default function Profile() {
       <div className="shadow-[0px_2px_10px_rgba(3,3,3,0.1)] rounded-lg flex gap-4 mt-8 py-6 px-8">
         <div className="flex flex-col justify-center items-center gap-4">
           <img
-            src={user.avatar_url || avatarImage}
+            src={user.avatar_key ? `${import.meta.env.VITE_R2_STORAGE}/${user.avatar_key}` : avatarImage}
             alt="avatar"
             className="w-20"
           />

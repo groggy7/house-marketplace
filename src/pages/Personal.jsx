@@ -36,77 +36,112 @@ export default function Personal() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setIsUpdating(true);
-    const formdata = new FormData(e.target);
 
+    if (!displaySaveBtn) return;
+
+    setIsUpdating(true);
+    const toastId = toast.loading("Updating profile...");
+
+    const formdata = new FormData(e.target);
     const fullName = formdata.get("name");
     const regex = /^\s*([a-zA-Z]+)\s+([a-zA-Z]+)\s*$/;
+
     if (fullName && !regex.test(fullName)) {
+      toast.dismiss(toastId);
       toast.error("Enter a valid name");
       setIsUpdating(false);
       return;
     }
 
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("avatar", selectedFile);
+    try {
+      let avatarKey = null;
 
-      const uploadResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user/avatar`,
-        {
-          method: "PUT",
-          credentials: "include",
-          body: formData,
+      if (selectedFile) {
+        const presignedUrlRes = await fetch(
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/upload/avatar`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: user.id,
+              content_type: selectedFile.type,
+            }),
+          }
+        );
+
+        if (!presignedUrlRes.ok) {
+          throw new Error("Failed to get upload URL.");
         }
-      );
 
-      if (!uploadResponse.ok) {
-        toast.error("Failed to upload image");
+        const { url, key } = await presignedUrlRes.json();
+        avatarKey = key;
+
+        const uploadResponse = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": selectedFile.type,
+          },
+          body: selectedFile,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload image.");
+        }
+      }
+
+      const updateData = {};
+      if (avatarKey) {
+        updateData.avatar_key = user.id;
+      }
+      if (fullName) {
+        updateData.full_name = fullName;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        if (!updateData.full_name) {
+          updateData.full_name = user.full_name;
+        }
+
+        console.log("Data being sent to /user/info:", updateData);
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user/info`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updateData),
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to update profile.");
+        }
+        
+        await response.json();
+      } else {
+        toast.dismiss(toastId);
+        setDisplaySaveBtn(false);
         setIsUpdating(false);
         return;
       }
 
-      const { url } = await uploadResponse.json();
+      toast.dismiss(toastId);
+      toast.success("Profile updated successfully!");
 
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user/info`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            avatar_url: url,
-            full_name: fullName || user.full_name,
-          }),
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        toast.success("Profile updated");
-      } else {
-        toast.error("Failed to update profile");
-      }
-      window.location.reload();
-    } else {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_SERVER_HEROKU}/user/info`,
-        {
-          method: "PUT",
-          body: JSON.stringify({
-            full_name: fullName,
-          }),
-          credentials: "include",
-        }
-      );
-      if (response.ok) {
-        toast.success("Profile updated");
-      } else {
-        toast.error("Failed to update profile");
-      }
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      toast.dismiss(toastId);
+      toast.error(error.message || "An error occurred during update.");
+      setIsUpdating(false);
+      setDisplaySaveBtn(false);
     }
-
-    setDisplaySaveBtn(false);
-    setIsUpdating(false);
   }
 
   if (loading) {
@@ -151,7 +186,7 @@ export default function Personal() {
           </button>
           <div className="flex flex-col justify-center items-center gap-4">
             <img
-              src={previewImage || user.avatar_url || avatar}
+              src={previewImage || (user.avatar_key ? `${import.meta.env.VITE_R2_STORAGE}/${user.avatar_key}` : avatar)}
               alt="profile picture"
               className="w-24 h-24 object-cover rounded-full mx-auto"
             />
